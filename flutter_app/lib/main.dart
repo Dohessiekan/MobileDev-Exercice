@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'pages/login_page.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -38,7 +39,9 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  
+                },
                 style: ElevatedButton.styleFrom(
                   fixedSize: Size(350, 70),
                   backgroundColor: Color(0xFFF9B32D),
@@ -61,7 +64,12 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: 15),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   fixedSize: Size(350, 70),
                   backgroundColor: Color(0xFF303384),
