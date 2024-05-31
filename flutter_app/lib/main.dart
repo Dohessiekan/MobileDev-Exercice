@@ -38,43 +38,47 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {
-                },
+                onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                   fixedSize: Size(350, 70),
+                  fixedSize: Size(350, 70),
                   backgroundColor: Color(0xFFF9B32D),
                   elevation: 5,
-                   // Specify button color
-                   shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10), // Set border radius
-      // You can also specify other border properties such as side
-      // side: BorderSide(color: Colors.red, width: 2), // Border side
-    ),
+                  // Specify button color
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(10), // Set border radius
+                    // You can also specify other border properties such as side
+                    // side: BorderSide(color: Colors.red, width: 2), // Border side
+                  ),
                 ),
                 child: Text(
                   'GET STARTED',
-                  style: TextStyle(fontSize: 18, color: Colors.white,
-                  fontFamily: 'FiraSansMedium'),
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontFamily: 'FiraSansMedium'),
                 ),
               ),
               SizedBox(height: 15),
               ElevatedButton(
-                onPressed: () {
-                },
+                onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                   fixedSize: Size(350, 70),
+                  fixedSize: Size(350, 70),
                   backgroundColor: Color(0xFF303384),
                   elevation: 5,
                   shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10), // Set border radius
-      // You can also specify other border properties such as side
-      // side: BorderSide(color: Colors.red, width: 2), // Border side
-    ), // Specify button color
+                    borderRadius:
+                        BorderRadius.circular(10), // Set border radius
+                    // You can also specify other border properties such as side
+                    // side: BorderSide(color: Colors.red, width: 2), // Border side
+                  ), // Specify button color
                 ),
-                
                 child: Text(
                   'I ALREADY HAVE AN ACCOUNT',
-                  style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'FiraSansMedium'),
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontFamily: 'FiraSansMedium'),
                 ),
               ), // Corrected syntax here
             ],

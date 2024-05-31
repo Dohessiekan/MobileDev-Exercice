@@ -1,245 +1,165 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  LoginPage({Key? key}) : super(key: key);
 
-  // text editing controllers
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
 
-  // sign user in method
-  void signUserIn() {}
+class _LoginPageState extends State<LoginPage> {
+  int activeIndex = 0;
+
+  @override
+  void initState() {
+    Timer.periodic(Duration(seconds: 5), (timer) {
+      setState(() {
+        activeIndex++;
+
+        if (activeIndex == 4) activeIndex = 0;
+      });
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
-      body: SafeArea(
-        child: Center(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 8),
-
-              // logo
-              Padding(
-                padding: const EdgeInsets.only(top: 40.0, bottom: 70),
+              SizedBox(height: 50),
+              // Placeholder for a single image or logo without animation
+              Container(
                 child: Image.asset(
-                  'assets/images/img1.png',
+                  'assets/img1.png',
                   height: 200,
                 ),
               ),
-
-              // welcome back, you've been missed
-
-              // username textfield with title
-              Padding(
-                padding: const EdgeInsets.only(right: 600),
-                child: Text(
-                  'E-mail',
-                  style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 20,
+              SizedBox(height: 40),
+              TextField(
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(0.0),
+                  labelText: 'Email',
+                  hintText: 'Username or e-mail',
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14.0,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Colors.grey.shade200, width: 2),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  floatingLabelStyle: TextStyle(
+                    color: Color(0xFF303384),
+                    fontSize: 18.0,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black, width: 1.5),
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
               ),
-              const SizedBox(height: 2),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: MyTextField(
-                  controller: usernameController,
-                  hintText: 'Username',
-                  obscureText: false,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              // password textfield with title
-              Padding(
-                padding: const EdgeInsets.only(right: 600),
-                child: Text(
-                  'Password',
-                  style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 2),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: MyTextField(
-                  controller: passwordController,
+              SizedBox(height: 20),
+              TextField(
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(0.0),
+                  labelText: 'Password',
                   hintText: 'Password',
-                  obscureText: true,
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14.0,
+                  ),
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Colors.grey.shade200, width: 2),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  floatingLabelStyle: TextStyle(
+                    color: Color(0xFF303384),
+                    fontSize: 18.0,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black, width: 1.5),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                 ),
               ),
-
-              const SizedBox(height: 10),
-
-              // forgot password?
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 25.0), // Réduction de 25.0 à 8.0
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {},
+                    child: Text(
                       'Forgot Password?',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 25),
-
-              // sign in button
-              MyButton(
-                onTap: signUserIn,
-              ),
-
-              const SizedBox(height: 50),
-
-              // or continue with
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 25.0), // Réduction de 25.0 à 8.0
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        thickness: 0.5,
-                        color: Colors.grey[400],
+                      style: TextStyle(
+                        color: Color(0xFF303384),
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                    Expanded(
-                      child: Divider(
-                        thickness: 0.5,
-                        color: Colors.grey[400],
-                      ),
-                    ),
-                  ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 30),
+              MaterialButton(
+                onPressed: () {},
+                height: 45,
+                color: Color(0xFFF9B32D),
+                child: Text(
+                  "Login",
+                  style: TextStyle(color: Colors.white, fontSize: 16.0),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-
-              const SizedBox(height: 50),
-
-              // google + apple sign in buttons
-
-              const SizedBox(height: 50),
-
-              // not a member? register now
+              SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Not a member?',
-                    style: TextStyle(color: Colors.grey[700]),
-                  ),
-                  const SizedBox(width: 20),
-                  const Text(
-                    'Register now',
+                    'Don\'t have an account?',
                     style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade600,
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      'Sign up',
+                      style: TextStyle(
+                        color: Color(0xFF303384),
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class MyButton extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const MyButton({required this.onTap, Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        margin: const EdgeInsets.symmetric(horizontal: 25),
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 237, 215, 14),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Center(
-          child: Text(
-            'Sign In',
-            style: TextStyle(color: Colors.white, fontSize: 16),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class MyTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String hintText;
-  final bool obscureText;
-
-  const MyTextField({
-    required this.controller,
-    required this.hintText,
-    required this.obscureText,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: 25.0), // Réduction de 25.0 à 8.0
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey),
-          ),
-          fillColor: Colors.grey.shade200,
-          filled: true,
-          hintText: hintText,
-        ),
-      ),
-    );
-  }
-}
-
-class SquareTile extends StatelessWidget {
-  final String imagePath;
-
-  const SquareTile({
-    required this.imagePath,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(
-          20), // Réduction de 20 à une valeur inférieure si nécessaire
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white),
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.grey[200],
-      ),
-      child: Image.asset(
-        imagePath,
-        height: 40,
       ),
     );
   }
