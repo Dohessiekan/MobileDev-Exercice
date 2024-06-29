@@ -206,7 +206,7 @@ class _ScorePageState extends State<ScorePage> {
                           children: [
                             CircleAvatar(
                               radius: 30,
-                              backgroundImage: AssetImage('assets/avatar.png'), // Example avatar image
+                              backgroundImage: AssetImage('assets/edquest.png'), // Example avatar image
                             ),
                             SizedBox(width: 20),
                             Expanded(
@@ -269,8 +269,8 @@ class _ScorePageState extends State<ScorePage> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
+              icon: Icon(Icons.book),
+              label: 'Courses',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),

@@ -37,6 +37,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
+  get: ^4.6.6
+  iconsax: ^0.0.8
 
 dev_dependencies:
   flutter_test:
@@ -58,10 +60,12 @@ flutter:
     - family: FiraSans
       fonts:
         - asset: fonts/FiraSans-Medium.ttf
+    - family: Ubuntu
+      fonts:
+        - asset: fonts/Ubuntu/Ubuntu-Bold.ttf
+        - asset: fonts/Ubuntu/Ubuntu-Regular.ttf
   assets:
-    - assets/logo.png
-    - assets/lquest.png
-    - assets/edquest.png
+    - assets/
 
     
   # The following line ensures that the Material Icons font is

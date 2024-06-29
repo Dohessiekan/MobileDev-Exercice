@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/navbar.dart';
+import 'package:get/get.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -120,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 30),
               MaterialButton(
-                onPressed: () {},
+                onPressed: ()=>Get.to(()=>const BottomNavigationMenu()),
                 height: 45,
                 color: Color(0xFFF9B32D),
                 child: Text(

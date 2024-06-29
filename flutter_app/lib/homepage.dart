@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_app/courses.dart';
+import 'package:flutter_app/detailcourse.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -182,7 +185,7 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(height: 20), // Adjust spacing as needed
                       Container(
                         width: double.infinity,
-                        height: 300,
+                        height: 200,
                         decoration: BoxDecoration(
                           color: Color.fromARGB(103, 55, 141, 212),
                           borderRadius: BorderRadius.circular(20),
@@ -216,25 +219,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 20.0),
-                                child: ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    fixedSize: Size(200, 65),
-                                    backgroundColor: Color.fromARGB(255, 255, 255, 255),
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Find a course',
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      color: Color(0xFF6A6DB5),
-                                      fontFamily: 'FiraSansMedium',
-                                    ),
-                                  ),
-                                ),
+
                               ),
                             ],
                           ),
@@ -267,9 +252,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 TextButton(
-                                  onPressed: () {
-                                    // Handle "See All" button tap
-                                  },
+                                  onPressed: ()=>Get.to(()=>const Detailcourse()),
                                   child: Text(
                                     'See All',
                                     style: TextStyle(
@@ -311,9 +294,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ),
                                   trailing: Icon(Icons.chevron_right),
-                                  onTap: () {
-                                    // Handle tap on item
-                                  },
+                                  onTap:()=>Get.to(()=>const Detailcourse()),
                                 );
                               },
                             ),
@@ -326,48 +307,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-        ),
-      ),
-      bottomNavigationBar: Container(
-        height: 80, // Increased height for the bottom navigation bar
-        decoration: BoxDecoration(
-          color: Colors.white, // Background color for better distinction
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0, -1),
-              blurRadius: 10,
-            ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.transparent, // Transparent background to show the container color
-          elevation: 0,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          unselectedItemColor: Color(0xFF6A6DB5), // Different color for unselected items
-          onTap: _onItemTapped,
-          iconSize: 30, // Increased icon size
-          selectedFontSize: 16, // Increased font size for selected item
-          unselectedFontSize: 14, // Increased font size for unselected items
         ),
       ),
     );
@@ -384,9 +323,11 @@ class WavePainter extends CustomPainter {
     Path path = Path();
     path.moveTo(0, size.height * 0.4);
     path.quadraticBezierTo(
-        size.width * 0.25, size.height * 0.35, size.width * 0.5, size.height * 0.4);
+      size.width * 0.25, size.height * 0.35, size.width * 0.5, size.height * 0.4,
+    );
     path.quadraticBezierTo(
-        size.width * 0.75, size.height * 0.45, size.width, size.height * 0.4);
+      size.width * 0.75, size.height * 0.45, size.width, size.height * 0.4,
+    );
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
     path.close();
@@ -400,26 +341,32 @@ class WavePainter extends CustomPainter {
 
     Path wavePath1 = Path();
     wavePath1.moveTo(0, size.height * 0.3);
-    wavePath1.quadraticBezierTo(size.width * 0.25, size.height * 0.35,
-        size.width * 0.5, size.height * 0.3);
-    wavePath1.quadraticBezierTo(size.width * 0.75, size.height * 0.25,
-        size.width, size.height * 0.45);
+    wavePath1.quadraticBezierTo(
+      size.width * 0.25, size.height * 0.35, size.width * 0.5, size.height * 0.3,
+    );
+    wavePath1.quadraticBezierTo(
+      size.width * 0.75, size.height * 0.25, size.width, size.height * 0.45,
+    );
     canvas.drawPath(wavePath1, wavePaint);
 
     Path wavePath2 = Path();
     wavePath2.moveTo(0, size.height * 0.5);
-    wavePath2.quadraticBezierTo(size.width * 0.25, size.height * 0.55,
-        size.width * 0.5, size.height * 0.5);
-    wavePath2.quadraticBezierTo(size.width * 0.75, size.height * 0.45,
-        size.width, size.height * 0.5);
+    wavePath2.quadraticBezierTo(
+      size.width * 0.25, size.height * 0.55, size.width * 0.5, size.height * 0.5,
+    );
+    wavePath2.quadraticBezierTo(
+      size.width * 0.75, size.height * 0.45, size.width, size.height * 0.5,
+    );
     canvas.drawPath(wavePath2, wavePaint);
 
     Path wavePath3 = Path();
     wavePath3.moveTo(0, size.height * 0.7);
-    wavePath3.quadraticBezierTo(size.width * 0.25, size.height * 0.75,
-        size.width * 0.5, size.height * 0.7);
-    wavePath3.quadraticBezierTo(size.width * 0.75, size.height * 0.65,
-        size.width, size.height * 0.7);
+    wavePath3.quadraticBezierTo(
+      size.width * 0.25, size.height * 0.75, size.width * 0.5, size.height * 0.7,
+    );
+    wavePath3.quadraticBezierTo(
+      size.width * 0.75, size.height * 0.65, size.width, size.height * 0.7,
+    );
     canvas.drawPath(wavePath3, wavePaint);
   }
 
