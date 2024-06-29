@@ -172,18 +172,13 @@ class _RegisterPageState extends State<RegisterPage> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Color(0xFFF8B22A)),
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: Size(350, 70),
+                      backgroundColor: Color(0xFFF9B32D),
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: MaterialStateProperty.all(
-                        EdgeInsets.symmetric(vertical: 16.0),
-                      ),
-                      shadowColor: MaterialStateProperty.all(Colors.black),
-                      elevation: MaterialStateProperty.all(8.0), // Effet d'ombre portée
                     ),
                     onPressed: () {
                       if (_formKey.currentState?.validate() ?? false) {
