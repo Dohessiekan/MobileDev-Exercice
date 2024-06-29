@@ -33,7 +33,6 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register Page'),
       ),
       body: Container(
         color: Color(0xFFF5F5F5), // Couleur de fond de la page

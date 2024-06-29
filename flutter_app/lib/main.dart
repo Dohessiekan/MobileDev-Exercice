@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'pages/login_page.dart';
-
+import 'register.dart';
+import 'homepage.dart';
+import 'Coursework.dart';
+import 'scorepage.dart';
 void main() {
   runApp(MaterialApp(
     title: 'Flutter Demo',
@@ -8,12 +11,12 @@ void main() {
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       useMaterial3: true,
     ),
-    home: const HomePage(),
+    home: const ScorePage(),
   ));
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key});
+class WelcomePage extends StatelessWidget {
+  const WelcomePage({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +43,10 @@ class HomePage extends StatelessWidget {
               SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterApp()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   fixedSize: Size(350, 70),
@@ -89,6 +95,7 @@ class HomePage extends StatelessWidget {
                       fontFamily: 'FiraSansMedium'),
                 ),
               ), // Corrected syntax here
+              
             ],
           ),
         ),

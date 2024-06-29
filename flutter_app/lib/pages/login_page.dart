@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
               // Placeholder for a single image or logo without animation
               Container(
                 child: Image.asset(
-                  'assets/img1.png',
+                  'assets/edquest.png',
                   height: 200,
                 ),
               ),
