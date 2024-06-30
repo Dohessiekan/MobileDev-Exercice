@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MaterialApp(
-    home: BlankPage(),
-  ));
-}
+
 
 class BlankPage extends StatefulWidget {
   const BlankPage({Key? key}) : super(key: key);
@@ -21,21 +17,7 @@ class _BlankPageState extends State<BlankPage> {
       _selectedIndex = index;
     });
     // Actions for each navigation item
-    switch (index) {
-      case 0:
-        print('Home pressed');
-        break;
-      case 1:
-        print('Search pressed');
-        break;
-      case 2:
-        print('Notifications pressed');
-        break;
-      case 3:
-        print('Profile pressed');
-        break;
-    }
-  }
+    
 
   @override
   Widget build(BuildContext context) {
