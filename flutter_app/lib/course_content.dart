@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/coursework.dart';
 import 'package:get/get.dart';
-
+import 'DetailQuiz.dart';
+import 'course_content.dart';
+import 'courses.dart';
+import 'coursework.dart';
 
 class CourseContent extends StatelessWidget {
   const CourseContent({super.key});
@@ -12,17 +14,16 @@ class CourseContent extends StatelessWidget {
       backgroundColor: const Color(0xFF303384),
       appBar: AppBar(
         backgroundColor: const Color(0xFF303384),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // White back arrow
+          onPressed: () {
+            Navigator.of(context).pop(); // Navigate back to the previous screen
+          },
+        ),
         title: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back),
-              color: Colors.white,
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            const Text(
-              'Details Course',
+          children: const [
+            Text(
+              'Course Program',
               style: TextStyle(
                 color: Colors.white,
                 fontFamily: 'Ubuntu', // Set the font family to Ubuntu
@@ -34,61 +35,62 @@ class CourseContent extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.account_circle),
-            color: Colors.white,
+            icon: const Icon(Icons.account_circle, color: Colors.white), // White profile icon
             onPressed: () {
               // Add your profile icon action here
             },
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    'UI UX Design',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Ubuntu', // Set the font family to Ubuntu
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
+      body: Column(
+        children: [
+          // Add the padding and the row for the title and star rating
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  'UI UX Design',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Ubuntu', // Set the font family to Ubuntu
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.star,
+                      color: Colors.yellow, // Yellow star icon
+                      size: 24.0,
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        color: Colors.yellow, // Set the star icon color to yellow
-                        size: 24.0,
+                    SizedBox(width: 4), // Spacing between the star and the text
+                    Text(
+                      '4.8',
+                      style: TextStyle(
+                        color: Colors.white, // White text color
+                        fontFamily: 'Ubuntu',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
                       ),
-                      SizedBox(width: 4), // Add some spacing between the star and the text
-                      Text(
-                        '4.8',
-                        style: TextStyle(
-                          color: Colors.white, // Set the color of the text to white
-                          fontFamily: 'Ubuntu', // Set the font family to Ubuntu
-                          fontSize: 18, // Set the font size to 18
-                          fontWeight: FontWeight.w500, // Set the font weight to medium
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 20), // Add space between the title and the container
-            Container(
+          ),
+          const SizedBox(height: 20), // Space between the title and the container
+
+          // Add the white container
+          Expanded(
+            child: Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(0.0), // Set top left corner radius
-                  topRight: Radius.circular(0.0), // Set top right corner radius
+                  topLeft: Radius.circular(0.0), // Top left corner radius
+                  topRight: Radius.circular(0.0), // Top right corner radius
                 ),
               ),
               child: Column(
@@ -99,8 +101,8 @@ class CourseContent extends StatelessWidget {
                     child: Text(
                       'Week',
                       style: TextStyle(
-                        color: Color(0xFF303384), // Set the color to purple
-                        fontFamily: 'Ubuntu', // Set the font family to Ubuntu
+                        color: Color(0xFF303384), // Purple color for the title
+                        fontFamily: 'Ubuntu',
                         fontSize: 20,
                         fontWeight: FontWeight.w500,
                       ),
@@ -110,78 +112,36 @@ class CourseContent extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Container(
+                      children: List.generate(4, (index) {
+                        // Generate week buttons dynamically
+                        final isActive = index == 0; // Only first week is active
+                        final color = isActive ? Color(0xFFF9B32D) : Color(0xFF303384);
+                        return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF9B32D), // Set the background color to F9B32D
+                            color: color,
                             borderRadius: BorderRadius.circular(40.0),
                           ),
-                          child: const Text(
-                            '1',
-                            style: TextStyle(
+                          child: Text(
+                            '${index + 1}',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontFamily: 'Ubuntu',
                               fontSize: 16,
                             ),
                           ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF303384),
-                            borderRadius: BorderRadius.circular(40.0),
-                          ),
-                          child: const Text(
-                            '2',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Ubuntu',
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF303384),
-                            borderRadius: BorderRadius.circular(40.0),
-                          ),
-                          child: const Text(
-                            '3',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Ubuntu',
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF303384),
-                            borderRadius: BorderRadius.circular(40.0),
-                          ),
-                          child: const Text(
-                            '4',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Ubuntu',
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ],
+                        );
+                      }),
                     ),
                   ),
-                  const SizedBox(height: 20), // Add space between the boxes and the new title
+                  const SizedBox(height: 20), // Space between the buttons and the section title
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
                       'UI UX Design Defined',
                       style: TextStyle(
-                        color: Color(0xFF303384), // Set the color to match the background
-                        fontFamily: 'Ubuntu', // Set the font family to Ubuntu
+                        color: Color(0xFF303384), // Purple color for the section title
+                        fontFamily: 'Ubuntu',
                         fontSize: 20,
                         fontWeight: FontWeight.w500,
                       ),
@@ -193,7 +153,7 @@ class CourseContent extends StatelessWidget {
                     child: Text(
                       'UI/UX Design is the process of creating user interfaces and experiences that are visually appealing, easy to navigate, and provide a satisfying user experience.',
                       style: TextStyle(
-                        fontFamily: 'Ubuntu', // Set the font family to Ubuntu
+                        fontFamily: 'Ubuntu',
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         color: Colors.black,
@@ -207,7 +167,7 @@ class CourseContent extends StatelessWidget {
                       child: Text(
                         'UX Design Principles',
                         style: TextStyle(
-                          fontFamily: 'Ubuntu', // Set the font family to Ubuntu
+                          fontFamily: 'Ubuntu',
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
                           color: Color(0xFF303384),
@@ -221,7 +181,7 @@ class CourseContent extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Divider(color: Colors.grey, thickness: 1), // Regular grey line above the first title
+                        const Divider(color: Colors.grey, thickness: 1), // Divider line
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Row(
@@ -230,17 +190,17 @@ class CourseContent extends StatelessWidget {
                               const Text(
                                 'Design with the user in mind',
                                 style: TextStyle(
-                                  fontFamily: 'Ubuntu', // Set the font family to Ubuntu
+                                  fontFamily: 'Ubuntu',
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF303384), // Set the color to #303384
+                                  color: Color(0xFF303384),
                                 ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(right: 16.0),
                                 child: IconButton(
                                   icon: const Icon(Icons.chevron_right, color: Colors.black),
-                                  onPressed: ()=>Get.to(()=>const Coursework())
+                                  onPressed: () => Get.to(() => const Coursework()),
                                 ),
                               ),
                             ],
@@ -255,10 +215,10 @@ class CourseContent extends StatelessWidget {
                               const Text(
                                 'Consider minor group of users',
                                 style: TextStyle(
-                                  fontFamily: 'Ubuntu', // Set the font family to Ubuntu
+                                  fontFamily: 'Ubuntu',
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF303384), // Set the color to #303384
+                                  color: Color(0xFF303384),
                                 ),
                               ),
                               Padding(
@@ -278,12 +238,12 @@ class CourseContent extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                'Consider minor group of users',
+                                'Accessibility in Design',
                                 style: TextStyle(
-                                  fontFamily: 'Ubuntu', // Set the font family to Ubuntu
+                                  fontFamily: 'Ubuntu',
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF303384), // Set the color to #303384
+                                  color: Color(0xFF303384),
                                 ),
                               ),
                               Padding(
@@ -296,25 +256,51 @@ class CourseContent extends StatelessWidget {
                             ],
                           ),
                         ),
+                        const Divider(color: Colors.grey, thickness: 1),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Usability Testing',
+                                style: TextStyle(
+                                  fontFamily: 'Ubuntu',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF303384),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 16.0),
+                                child: IconButton(
+                                  icon: const Icon(Icons.chevron_right, color: Colors.black),
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Divider(color: Colors.grey, thickness: 1),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20), // Add space before the button
+                  const SizedBox(height: 20), // Space before the button
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Center(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF013399), // Background color
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                          backgroundColor: const Color(0xFF013399), // Button background color
+                          padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 20.0),
                         ),
-                        onPressed: () {},
+                        onPressed: () => Get.to(() => const DetailQuiz()),
                         child: const Text(
                           'Take the quiz',
                           style: TextStyle(
-                            color: Colors.white, // Text color
-                            fontFamily: 'Ubuntu', // Set the font family to Ubuntu
-                            fontSize: 18,
+                            color: Colors.white, // Button text color
+                            fontFamily: 'Ubuntu',
+                            fontSize: 20,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -324,10 +310,9 @@ class CourseContent extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
-
