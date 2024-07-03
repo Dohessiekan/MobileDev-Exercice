@@ -184,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(height: 20),  // Add space before the featured courses section
                       Container(
                         width: double.infinity,  // Container width takes the full available width
-                        height: 240,  // Height for the featured courses section
+                        height: 300,  // Height for the featured courses section
                         decoration: BoxDecoration(
                           color: Color.fromARGB(103, 55, 141, 212),  // Background color of the container
                           borderRadius: BorderRadius.circular(20),  // Border radius for rounded corners
