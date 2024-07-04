@@ -247,48 +247,7 @@ class _ScorePageState extends State<ScorePage> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        height: 80,  // Height of the BottomNavigationBar
-        decoration: BoxDecoration(
-          color: Colors.white,  // Background color of the BottomNavigationBar
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),  // Rounded top left corner
-            topRight: Radius.circular(20),  // Rounded top right corner
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,  // Shadow color
-              offset: Offset(0, -1),  // Shadow offset
-              blurRadius: 10,  // Shadow blur radius
-            ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.transparent,  // Transparent background for the BottomNavigationBar
-          elevation: 0,  // Remove default shadow
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),  // Icon for Home tab
-              label: 'Home',  // Label for Home tab
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.book),  // Icon for Courses tab
-              label: 'Courses',  // Label for Courses tab
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),  // Icon for Profile tab
-              label: 'Profile',  // Label for Profile tab
-            ),
-          ],
-          currentIndex: _selectedIndex,  // Currently selected tab
-          selectedItemColor: Colors.amber[800],  // Color for the selected tab
-          unselectedItemColor: Color(0xFF6A6DB5),  // Color for unselected tabs
-          onTap: _onItemTapped,  // Method called on tab change
-          iconSize: 30,  // Size of the icons
-          selectedFontSize: 16,  // Font size for the selected tab label
-          unselectedFontSize: 14,  // Font size for unselected tab labels
-        ),
-      ),
+
     );
   }
 }

@@ -248,7 +248,7 @@ class Detailcourse extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 40), // Space before the enroll button
+                    const SizedBox(height: 20), // Space before the enroll button
                     Center(
                       child: ElevatedButton(
                         onPressed: () => Get.to(() => const CourseContent()), // Navigate to the CourseContent page

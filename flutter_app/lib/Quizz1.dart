@@ -59,18 +59,18 @@ class _QuizPageState extends State<QuizPage> {
         iconTheme: IconThemeData(color: Colors.white),  // Icon color in AppBar
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),  // Title text style
       ),
-      body: Container(
-        margin: EdgeInsets.only(top: 50),  // Margin to position the content below the AppBar
-        decoration: BoxDecoration(
-          color: Colors.white,  // Background color for the content area
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),  // Rounded top left corner
-            topRight: Radius.circular(30),  // Rounded top right corner
+      body: SingleChildScrollView(
+        // Make the whole body scrollable
+        child: Container(
+          margin: EdgeInsets.only(top: 50),  // Margin to position the content below the AppBar
+          decoration: BoxDecoration(
+            color: Colors.white,  // Background color for the content area
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),  // Rounded top left corner
+              topRight: Radius.circular(30),  // Rounded top right corner
+            ),
           ),
-        ),
-        width: double.infinity,  // Make the container take up full width
-        child: Padding(
-          padding: EdgeInsets.only(top: 20),  // Padding at the top of the content
+          width: double.infinity,  // Make the container take up full width
           child: Column(
             children: [
               // Separator line at the top of the content
@@ -220,6 +220,7 @@ class _QuizPageState extends State<QuizPage> {
                   ],
                 ),
               ),
+              SizedBox(height: 20),  // Space at the bottom
             ],
           ),
         ),

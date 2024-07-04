@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/main.dart';
 import 'package:get/get.dart';
+import 'main.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -10,152 +10,144 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  // Variable to keep track of the selected index (not used in this example)
   int _selectedIndex = 0;
 
-  // Method to handle the west icon press action
   void handleWestIconPressed() {
-    // Add the logic you want to execute when the west icon is pressed
     print('Icon west pressed!');
   }
 
-  // Method to handle the settings icon press action
   void handleSettingsIconPressed() {
-    // Add the logic you want to execute when the settings icon is pressed
     print('Icon settings pressed!');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF303384),  // Background color of the entire page
+      backgroundColor: const Color(0xFF303384),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),  // Horizontal padding for the entire content
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,  // Align children to the start of the column
-            children: [
-              // Row for the header with the logout and settings icons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,  // Space icons evenly on the header
-                children: [
-                  IconButton(
-                    onPressed: () => Get.to(() => const WelcomePage()),  // Navigate to WelcomePage on press
-                    icon: Icon(
-                      Icons.logout,  // Logout icon
-                      color: Colors.white,  // Icon color
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => Get.to(() => const WelcomePage()),
+                      icon: Icon(
+                        Icons.logout,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: handleSettingsIconPressed,  // Call the settings icon handler
-                    icon: Icon(
-                      Icons.settings,  // Settings icon
-                      color: Colors.white,  // Icon color
+                    IconButton(
+                      onPressed: handleSettingsIconPressed,
+                      icon: Icon(
+                        Icons.settings,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 120),  // Space between the header and the content below
-              Expanded(
-                child: Stack(
-                  clipBehavior: Clip.none,  // Allow the stack to overflow the bounds
-                  alignment: Alignment.topCenter,  // Align the children to the top center
+                  ],
+                ),
+                const SizedBox(height: 120),
+                Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.topCenter,
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,  // Background color of the content container
+                        color: Colors.white,
                         borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(30.0),  // Rounded top corners
+                          top: Radius.circular(30.0),
                         ),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.only(
-                            top: 70.0, left: 10.0, right: 10.0),  // Padding inside the content container
+                            top: 70.0, left: 10.0, right: 10.0),
                         child: Column(
                           children: [
-                            // Display the user's name
                             const Text(
-                              'Mark Brys',  // User's name
+                              'Mark Brys',
                               style: TextStyle(
-                                fontSize: 24,  // Font size for the name
-                                fontWeight: FontWeight.bold,  // Bold font weight
-                                color: Colors.black,  // Text color
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
                               ),
                             ),
-                            const SizedBox(height: 10),  // Space between the name and the "Stats" text
+                            const SizedBox(height: 10),
                             Align(
-                              alignment: Alignment.centerLeft,  // Align text to the left
+                              alignment: Alignment.centerLeft,
                               child: Text(
-                                'Stats',  // Section title
+                                'Stats',
                                 style: TextStyle(
-                                  fontSize: 24,  // Font size for the section title
-                                  fontWeight: FontWeight.bold,  // Bold font weight
-                                  color: Colors.black,  // Text color
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 10),  // Space between the "Stats" text and the stats content
-                            // Row for displaying user stats
+                            const SizedBox(height: 10),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,  // Space stats evenly
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Column(
                                   children: [
                                     _buildRedContainer(
-                                        '526', 'Total XP', false),  // XP stat card
-                                    const SizedBox(height: 20),  // Space between stat cards
+                                        '526', 'Total XP', false),
+                                    const SizedBox(height: 20),
                                     _buildRedContainer(
-                                        '60%', 'Total XP', false),  // XP percentage card
+                                        '60%', 'Total XP', false),
                                   ],
                                 ),
                                 Column(
                                   children: [
                                     _buildRedContainer(
-                                        '25', 'Total quizzes played', true),  // Quizzes played card
-                                    const SizedBox(height: 20),  // Space between stat cards
+                                        '25', 'Total quizzes played', true),
+                                    const SizedBox(height: 20),
                                     _buildRedContainer(
-                                        '8', 'Quizzes created', true),  // Quizzes created card
+                                        '8', 'Quizzes created', true),
                                   ],
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 20),  // Space between the stats and the special offer section
+                            const SizedBox(height: 20),
                             Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),  // Padding for the special offer section
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
                               child: Container(
-                                width: double.infinity,  // Full width of the container
-                                height: 140,  // Height of the container
+                                width: double.infinity,
+                                height: 140,
                                 decoration: BoxDecoration(
-                                  color: Color(0xFF6A5AE0),  // Background color for the offer section
-                                  borderRadius: BorderRadius.circular(20.0),  // Rounded corners for the container
+                                  color: Color(0xFF6A5AE0),
+                                  borderRadius: BorderRadius.circular(20.0),
                                 ),
                                 child: Center(
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 10.0),  // Padding inside the offer section
+                                        horizontal: 10.0),
                                     child: RichText(
-                                      textAlign: TextAlign.center,  // Center the text in the offer section
+                                      textAlign: TextAlign.center,
                                       text: TextSpan(
                                         style: TextStyle(
-                                          fontSize: 24,  // Font size for the offer text
-                                          fontWeight: FontWeight.bold,  // Bold font weight
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         children: [
                                           TextSpan(
-                                            text: 'You have played a total of ',  // Offer message part 1
+                                            text: 'You have played a total of ',
                                             style:
-                                                TextStyle(color: Colors.black),  // Text color
+                                                TextStyle(color: Colors.black),
                                           ),
                                           TextSpan(
-                                            text: '24 quizzes',  // Offer message part 2
+                                            text: '24 quizzes',
                                             style:
-                                                TextStyle(color: Colors.white),  // Text color
+                                                TextStyle(color: Colors.white),
                                           ),
                                           TextSpan(
-                                            text: ' this month!',  // Offer message part 3
+                                            text: ' this month!',
                                             style:
-                                                TextStyle(color: Colors.black),  // Text color
+                                                TextStyle(color: Colors.black),
                                           ),
                                         ],
                                       ),
@@ -169,63 +161,62 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                     Positioned(
-                      top: -70,  // Position the avatar 70 pixels above the content container
+                      top: -70,
                       child: CircleAvatar(
-                        radius: 50,  // Size of the profile picture
-                        backgroundImage: AssetImage('assets/logo.png'),  // Profile picture asset
+                        radius: 50,
+                        backgroundImage: AssetImage('assets/logo.png'),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  // Method to build a red container widget for displaying stats
   Widget _buildRedContainer(
       String content, String description, bool isSpecial) {
     return Container(
-      width: 160,  // Width of the container
-      height: 85,  // Height of the container
-      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),  // Margin for the container
+      width: 160,
+      height: 85,
+      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white,  // Background color of the container
-        borderRadius: BorderRadius.circular(15.0),  // Rounded corners for the container
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15.0),
         border: Border.all(
-          color: Colors.grey,  // Border color
-          width: 2.0,  // Border width
+          color: Colors.grey,
+          width: 2.0,
         ),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,  // Center the content vertically
-        crossAxisAlignment: CrossAxisAlignment.start,  // Align content to the start horizontally
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 10.0),  // Left padding for the content
+            padding: const EdgeInsets.only(left: 10.0),
             child: Text(
-              content,  // Main content text
+              content,
               style: const TextStyle(
-                fontSize: 24,  // Font size for the content text
-                fontFamily: 'Rubik',  // Font family
-                fontWeight: FontWeight.w900,  // Font weight
-                color: Color(0xFF303384),  // Text color
+                fontSize: 24,
+                fontFamily: 'Rubik',
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF303384),
               ),
             ),
           ),
-          const SizedBox(height: 5),  // Space between the content and the description
+          const SizedBox(height: 5),
           Padding(
-            padding: const EdgeInsets.only(left: 10.0),  // Left padding for the description
+            padding: const EdgeInsets.only(left: 10.0),
             child: Text(
-              description,  // Description text
+              description,
               style: const TextStyle(
-                fontSize: 14,  // Font size for the description text
-                color: Color(0xFF858494),  // Text color
+                fontSize: 14,
+                color: Color(0xFF858494),
               ),
-              textAlign: TextAlign.center,  // Center the description text
+              textAlign: TextAlign.center,
             ),
           ),
         ],
