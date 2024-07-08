@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';  // Import FirebaseAuth package
+import 'package:firebase_auth/firebase_auth.dart';
 import 'homepage.dart';
-import 'main.dart';  // Importing the main file where WelcomePage is likely defined
+import 'main.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -11,177 +11,176 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  String _username = '';
-  String _email = '';
-  String _password = '';
-  String _confirmPassword = '';
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // Empty app bar for now; you can add actions or titles here if needed
-      ),
+      appBar: AppBar(),
       body: Container(
-        color: const Color(0xFFF5F5F5), // Background color of the page
-        padding: const EdgeInsets.all(16.0),  // Padding around the content
+        color: const Color(0xFFF5F5F5),
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey,  // Assigning the form key
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Center(
                   child: Image.asset(
-                    'assets/logo.png',  // Logo displayed in the center
-                    height: 150,  // Height of the logo
+                    'assets/logo.png',
+                    height: 150,
                   ),
                 ),
-                const SizedBox(height: 16.0),  // Space between the logo and the form
+                const SizedBox(height: 16.0),
                 const Text(
-                  'Username',  // Label for the username field
-                  style: TextStyle(
-                    fontSize: 16.0,  // Font size of the text
-                    color: Color(0xFF303384),  // Text color
-                  ),
-                ),
-                const SizedBox(height: 8.0),  // Space between the label and the text field
-                TextFormField(
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color(0xFFDADADA),  // Background color of the text field
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),  // Rounded corners of the text field
-                      borderSide: BorderSide.none,  // Removing the border of the text field
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username';  // Validation for the username field
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _username = value ?? '';  // Saving the username field value
-                  },
-                ),
-                const SizedBox(height: 16.0),  // Space between text fields
-                const Text(
-                  'E-mail',  // Label for the email field
+                  'Username',
                   style: TextStyle(
                     fontSize: 16.0,
-                    color: Color(0xFF303384),  // Text color
+                    color: Color(0xFF303384),
                   ),
                 ),
                 const SizedBox(height: 8.0),
                 TextFormField(
+                  controller: _usernameController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFDADADA),  // Background color of the text field
+                    fillColor: const Color(0xFFDADADA),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),  // Rounded corners of the text field
-                      borderSide: BorderSide.none,  // Removing the border of the text field
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide.none,
                     ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email address';  // Validation for the email field
+                      return 'Please enter your username';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                const Text(
+                  'E-mail',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Color(0xFF303384),
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color(0xFFDADADA),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email address';
                     } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'Please enter a valid email address';  // Email format validation
+                      return 'Please enter a valid email address';
                     }
                     return null;
-                  },
-                  onSaved: (value) {
-                    _email = value ?? '';  // Saving the email field value
                   },
                 ),
                 const SizedBox(height: 16.0),
                 const Text(
-                  'Password',  // Label for the password field
+                  'Password',
                   style: TextStyle(
                     fontSize: 16.0,
-                    color: Color(0xFF303384),  // Text color
+                    color: Color(0xFF303384),
                   ),
                 ),
                 const SizedBox(height: 8.0),
                 TextFormField(
+                  controller: _passwordController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFDADADA),  // Background color of the text field
+                    fillColor: const Color(0xFFDADADA),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),  // Rounded corners of the text field
-                      borderSide: BorderSide.none,  // Removing the border of the text field
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide.none,
                     ),
                   ),
-                  obscureText: true,  // Hides the text for password
+                  obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';  // Validation for the password field
+                      return 'Please enter your password';
                     }
                     return null;
-                  },
-                  onSaved: (value) {
-                    _password = value ?? '';  // Saving the password field value
                   },
                 ),
                 const SizedBox(height: 16.0),
                 const Text(
-                  'Confirm Password',  // Label for the confirm password field
+                  'Confirm Password',
                   style: TextStyle(
                     fontSize: 16.0,
-                    color: Color(0xFF303384),  // Text color
+                    color: Color(0xFF303384),
                   ),
                 ),
                 const SizedBox(height: 8.0),
                 TextFormField(
+                  controller: _confirmPasswordController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFDADADA),  // Background color of the text field
+                    fillColor: const Color(0xFFDADADA),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),  // Rounded corners of the text field
-                      borderSide: BorderSide.none,  // Removing the border of the text field
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide.none,
                     ),
                   ),
-                  obscureText: true,  // Hides the text for password
+                  obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';  // Validation for the confirm password field
-                    } else if (value != _password) {
-                      return 'Passwords do not match';  // Checks if passwords match
+                      return 'Please confirm your password';
+                    } else if (value != _passwordController.text) {
+                      return 'Passwords do not match';
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    _confirmPassword = value ?? '';  // Saving the confirm password field value
-                  },
                 ),
-                const SizedBox(height: 32.0),  // Space before the signup button
+                const SizedBox(height: 32.0),
                 SizedBox(
-                  width: double.infinity,  // Button takes up the full available width
+                  width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(350, 70),  // Size of the button
-                      backgroundColor: const Color(0xFFF9B32D),  // Background color of the button
-                      elevation: 5,  // Shadow for the button
+                      fixedSize: const Size(350, 70),
+                      backgroundColor: const Color(0xFFF9B32D),
+                      elevation: 5,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),  // Rounded corners of the button
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: _registerUser,  // Call _registerUser method on button press
+                    onPressed: _registerUser,
                     child: const Text(
-                      'Signup',  // Button text
-                      style: TextStyle(color: Colors.white),  // Button text color
+                      'Signup',
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
                 const SizedBox(height: 16.0),
                 Center(
                   child: TextButton(
-                    onPressed: () => Get.to(() => const WelcomePage()),  // Navigation to the welcome page on button press
+                    onPressed: () => Get.to(() => const WelcomePage()),
                     child: const Text(
-                      'Already have an account? Sign in',  // Button text
+                      'Already have an account? Sign in',
                       style: TextStyle(
-                        color: Color(0xFF404040),  // Text color of the button
+                        color: Color(0xFF404040),
                       ),
                     ),
                   ),
@@ -196,16 +195,14 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> _registerUser() async {
     if (_formKey.currentState?.validate() ?? false) {
-      _formKey.currentState?.save();  // Save form data
       try {
         final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _email,
-          password: _password,
+          email: _emailController.text,
+          password: _passwordController.text,
         );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Registration successful')),
         );
-        // You can navigate to the home page or any other page after successful registration
         Get.to(() => const HomePage());
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
