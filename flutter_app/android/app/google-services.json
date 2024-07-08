@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "880219495187",
+    "project_id": "eduquest-e02f9",
+    "storage_bucket": "eduquest-e02f9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880219495187:android:25fe513b480feb5a3a18e6",
+        "android_client_info": {
+          "package_name": "com.example.flutter_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwTNLhk7hwaDbciyhXEiXCf2DGSFMN14o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
