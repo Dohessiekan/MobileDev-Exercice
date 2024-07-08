@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/navbar.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth package
+
+import '../navbar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,6 +14,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   int activeIndex = 0;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -24,14 +28,38 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  Future<void> _signInWithEmailAndPassword() async {
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      Get.to(() => const BottomNavigationMenu()); // Navigate to the bottom navigation menu on successful login
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        _showErrorSnackbar('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        _showErrorSnackbar('Wrong password provided for that user.');
+      } else {
+        _showErrorSnackbar('An error occurred. Please try again.');
+      }
+    }
+  }
+
+  void _showErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(20.0), // Add const for better performance
+          padding: const EdgeInsets.all(20.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center, // Center content horizontally
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 50),
               // Image or logo at the top
@@ -44,6 +72,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 40),
               // Email text field
               TextField(
+                controller: _emailController,
                 cursorColor: Colors.black,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(0.0),
@@ -75,7 +104,8 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 20),
               // Password text field
               TextField(
-                obscureText: true, // Hide the password text
+                controller: _passwordController,
+                obscureText: true,
                 cursorColor: Colors.black,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(0.0),
@@ -125,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 30),
               // Login button
               MaterialButton(
-                onPressed: () => Get.to(() => const BottomNavigationMenu()),
+                onPressed: _signInWithEmailAndPassword,
                 height: 45,
                 color: Color(0xFFF9B32D),
                 child: Text(
