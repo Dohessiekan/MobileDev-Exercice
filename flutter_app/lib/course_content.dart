@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/courses_model.dart';
 import 'package:get/get.dart';
 import 'DetailQuiz.dart';
 import 'course_content.dart';
@@ -6,7 +7,7 @@ import 'courses.dart';
 import 'coursework.dart';
 
 class CourseContent extends StatelessWidget {
-  const CourseContent({super.key});
+  const CourseContent({super.key, required Course course});
 
   @override
   Widget build(BuildContext context) {
