@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';  // Import Firebase core package
 import 'package:firebase_auth/firebase_auth.dart';  // Import FirebaseAuth package
+import 'blocs/courses_event.dart';
 import 'firebase_options.dart';  // Import your Firebase options
+import 'package:flutter_bloc/flutter_bloc.dart';  // Import flutter_bloc package
 import 'pages/login_page.dart';
 import 'register.dart';
 import 'homepage.dart';
 import 'Coursework.dart';
 import 'scorepage.dart';
 import 'courses.dart';
+import 'blocs/courses_bloc.dart';  // Import your CoursesBloc
+import 'repositories/courses_repository.dart';  // Import your CoursesRepository
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +28,14 @@ void main() async {
     }
   });
 
-  runApp(const MyApp());
+  final CoursesRepository repository = CoursesRepository();  // Initialize CoursesRepository
+
+  runApp(
+    BlocProvider(
+      create: (context) => CoursesBloc(repository)..add(FetchCourses()),  // Initialize CoursesBloc and add FetchCourses event
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -60,7 +71,7 @@ class WelcomePage extends StatelessWidget {
               Image.asset('assets/lquest.png'),   // Display another image (could be a logo or brand image)
               const SizedBox(height: 5),  // Add space between the image and the text
               const Text(
-                'Embark on your quest for knowledge! Master new skills and uncover hidden wisdom!',
+                'Embark on your quest for knowledge! Master new skills and uncover hidden wisdom.',
                 textAlign: TextAlign.center,  // Center the text within the available width
                 style: TextStyle(
                   fontSize: 24,  // Set the font size of the text
