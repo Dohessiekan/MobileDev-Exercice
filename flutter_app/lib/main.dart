@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';  // Import Firebase core package
 import 'package:firebase_auth/firebase_auth.dart';  // Import FirebaseAuth package
-import 'firebase_options.dart';  // Import your Firebase options
+import 'firebase_options.dart';  // Import your Firebase optionss
 import 'pages/login_page.dart';
 import 'register.dart';
 import 'homepage.dart';
