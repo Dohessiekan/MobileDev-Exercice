@@ -287,7 +287,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ),
                                   trailing: Icon(Icons.chevron_right),  // Icon for expanding to course details
-                                  onTap:()=>Get.to(()=>const Detailcourse()),  // Navigate to the Course Details page
+                                  onTap:()=>Get.to(()=>const Courses()),  // Navigate to the Course Details page
                                 );
                               },
                             ),
