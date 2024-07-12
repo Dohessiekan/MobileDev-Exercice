@@ -60,7 +60,7 @@ class WelcomePage extends StatelessWidget {
               Image.asset('assets/lquest.png'),   // Display another image (could be a logo or brand image)
               const SizedBox(height: 5),  // Add space between the image and the text
               const Text(
-                'Embark on your quest for knowledge! Master new skills and uncover hidden wisdom.',
+                'Embark on your quest for knowledge! Master new skills and uncover hidden wisdom!',
                 textAlign: TextAlign.center,  // Center the text within the available width
                 style: TextStyle(
                   fontSize: 24,  // Set the font size of the text
