@@ -1,6 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class ForgetPasswordPage extends StatelessWidget {
+class ForgetPasswordPage extends StatefulWidget {
+  @override
+  _ForgetPasswordPageState createState() => _ForgetPasswordPageState();
+}
+
+class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
+  final TextEditingController _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> passwordReset() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      _showSnackBar('Please enter your email');
+      return;
+    }
+
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
+      _showSnackBar('Please enter a valid email address');
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      _showSnackBar('Password reset email sent!');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        _showSnackBar('No account found for this email');
+      } else {
+        _showSnackBar('Something went wrong. Please try again later.');
+      }
+    }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,13 +71,13 @@ class ForgetPasswordPage extends StatelessWidget {
       ),
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.all(16.0), // General padding for the pagee
+        padding: EdgeInsets.all(16.0), // General padding for the page
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 16), // Space between app bar and title
             Text(
-              'Set a new password',
+              'Forgot Password',
               style: TextStyle(
                 fontSize: 24, // Size of the text
                 color: Colors.black, // Color of the text
@@ -39,25 +86,17 @@ class ForgetPasswordPage extends StatelessWidget {
             ),
             SizedBox(height: 8), // Space between title and subtitle
             Text(
-              'Create a new password. Ensure it differs from previous ones for security.',
+              'Please enter your email to reset the password',
               style: TextStyle(
                 fontSize: 16, // Size of the text
                 color: Colors.grey, // Color of the text
               ),
             ),
-            SizedBox(height: 30), // Space between subtitle and first label
-            Text(
-              'Password',
-              style: TextStyle(
-                fontSize: 16,
-                color: const Color.fromARGB(255, 32, 32, 32),
-                fontWeight: FontWeight.bold, // Weight of the text
-              ),
-            ),
-            SizedBox(height: 10), // Space between label and text field
+            SizedBox(height: 16), // Space between subtitle and text field
             TextField(
+              controller: _emailController,
               decoration: InputDecoration(
-                hintText: 'New Password',
+                hintText: 'Enter your email',
                 contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -71,37 +110,9 @@ class ForgetPasswordPage extends StatelessWidget {
                   borderSide: BorderSide(color: Colors.grey),
                 ),
               ),
-              obscureText: true,
+              keyboardType: TextInputType.emailAddress,
             ),
-            SizedBox(height: 30), // Space between text fields
-            Text(
-              'Confirm Password',
-              style: TextStyle(
-                fontSize: 16,
-                color: const Color.fromARGB(255, 29, 29, 29),
-                fontWeight: FontWeight.bold, // Weight of the text
-              ),
-            ),
-            SizedBox(height: 10), // Space between label and text field
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Re-enter password',
-                contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-              ),
-              obscureText: true,
-            ),
-            SizedBox(height: 30), // Space between text field and button
+            SizedBox(height: 16), // Space between text field and button
             SizedBox(
               width: double.infinity, // Full width button
               child: ElevatedButton(
@@ -112,11 +123,9 @@ class ForgetPasswordPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10.0), // Rounded borders
                   ),
                 ),
-                onPressed: () {
-                  // Handle reset password action
-                },
+                onPressed: passwordReset, // Call the reset password function
                 child: Text(
-                  'Update Password',
+                  'Reset Password',
                   style: TextStyle(
                     color: Colors.white, // Text color
                     fontSize: 16, // Text size

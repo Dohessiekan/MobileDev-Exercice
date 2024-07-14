@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'main.dart';
@@ -10,15 +11,6 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  int _selectedIndex = 0;
-
-  void handleWestIconPressed() {
-    print('Icon west pressed!');
-  }
-
-  void handleSettingsIconPressed() {
-    print('Icon settings pressed!');
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,144 +23,9 @@ class _ProfileState extends State<Profile> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed: () => Get.to(() => const WelcomePage()),
-                      icon: Icon(
-                        Icons.logout,
-                        color: Colors.white,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: handleSettingsIconPressed,
-                      icon: Icon(
-                        Icons.settings,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+                _buildHeader(),
                 const SizedBox(height: 120),
-                Stack(
-                  clipBehavior: Clip.none,
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(30.0),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 70.0, left: 10.0, right: 10.0),
-                        child: Column(
-                          children: [
-                            const Text(
-                              'Mark Brys',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Stats',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  children: [
-                                    _buildRedContainer(
-                                        '526', 'Total XP', false),
-                                    const SizedBox(height: 20),
-                                    _buildRedContainer(
-                                        '60%', 'Total XP', false),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    _buildRedContainer(
-                                        '25', 'Total quizzes played', true),
-                                    const SizedBox(height: 20),
-                                    _buildRedContainer(
-                                        '8', 'Quizzes created', true),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Container(
-                                width: double.infinity,
-                                height: 140,
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF6A5AE0),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                ),
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10.0),
-                                    child: RichText(
-                                      textAlign: TextAlign.center,
-                                      text: TextSpan(
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        children: [
-                                          TextSpan(
-                                            text: 'You have played a total of ',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                          TextSpan(
-                                            text: '24 quizzes',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          TextSpan(
-                                            text: ' this month!',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: -70,
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundImage: AssetImage('assets/logo.png'),
-                      ),
-                    ),
-                  ],
-                ),
+                _buildProfileContent(),
               ],
             ),
           ),
@@ -177,8 +34,169 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget _buildRedContainer(
-      String content, String description, bool isSpecial) {
+  // Header with logout and settings icons
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          onPressed: () async {
+            await FirebaseAuth.instance.signOut();
+            // Redirige vers la page de connexion ou montre un message
+          },
+          icon: const Icon(
+            Icons.logout,
+            color: Colors.white,
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            print('Icon settings pressed!');
+          },
+          icon: const Icon(
+            Icons.settings,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Main profile content with stats and a special message
+  Widget _buildProfileContent() {
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.topCenter,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(30.0),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(
+                top: 70.0, left: 10.0, right: 10.0),
+            child: Column(
+              children: [
+                _buildProfileName(),
+                const SizedBox(height: 10),
+                _buildStatsTitle(),
+                const SizedBox(height: 10),
+                _buildStatsRow(),
+                const SizedBox(height: 20),
+                _buildSpecialMessage(),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          top: -70,
+          child: CircleAvatar(
+            radius: 50,
+            backgroundImage: AssetImage('assets/logo.png'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Display profile name
+  Widget _buildProfileName() {
+    return const Text(
+      'Mark Brys',
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      ),
+    );
+  }
+
+  // Display "Stats" title
+  Widget _buildStatsTitle() {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: const Text(
+        'Stats',
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+      ),
+    );
+  }
+
+  // Display stats in a row
+  Widget _buildStatsRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          children: [
+            _buildRedContainer('526', 'Total XP', false),
+            const SizedBox(height: 20),
+            _buildRedContainer('60%', 'Total XP', false),
+          ],
+        ),
+        Column(
+          children: [
+            _buildRedContainer('25', 'Total quizzes played', true),
+            const SizedBox(height: 20),
+            _buildRedContainer('8', 'Quizzes created', true),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Display a special message at the bottom
+  Widget _buildSpecialMessage() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Container(
+        width: double.infinity,
+        height: 140,
+        decoration: BoxDecoration(
+          color: const Color(0xFF6A5AE0),
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: const TextSpan(
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+                children: [
+                  TextSpan(
+                    text: 'You have played a total of ',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  TextSpan(
+                    text: '24 quizzes',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  TextSpan(
+                    text: ' this month!',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Build a red container for stats
+  Widget _buildRedContainer(String content, String description, bool isSpecial) {
     return Container(
       width: 160,
       height: 85,

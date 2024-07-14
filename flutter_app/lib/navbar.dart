@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/courses.dart';
-import 'package:flutter_app/coursework.dart';
-import 'package:flutter_app/detailcourse.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'ProfilePage.dart';
-import 'Quizz1.dart';
+import 'DetailCourse.dart';
+import 'Courses.dart';
 import 'homepage.dart';
-import 'DetailQuiz.dart';
 
 // Main widget for the Bottom Navigation Menu
 class BottomNavigationMenu extends StatelessWidget {
@@ -23,8 +20,11 @@ class BottomNavigationMenu extends StatelessWidget {
             height: 80,  // Height of the bottom navigation bar
             elevation: 0,  // Shadow elevation of the bottom navigation bar
             selectedIndex: controller.selectedIndex.value,  // Get the currently selected index from the controller
-            onDestinationSelected: (index) =>
-                controller.selectedIndex.value = index,  // Update the selected index in the controller
+            onDestinationSelected: (index) {
+              controller.selectedIndex.value = index;
+              // Update the selected index in the controller and navigate to the selected screen
+              controller.pageController.jumpToPage(index);
+            },
             backgroundColor: Colors.white,  // Background color of the bottom navigation bar
             destinations: const [
               NavigationDestination(
@@ -36,7 +36,17 @@ class BottomNavigationMenu extends StatelessWidget {
             ],
           )),
       // Display the screen based on the selected index
-      body: Obx(() => controller.screens[controller.selectedIndex.value]),
+      body: PageView(
+        controller: controller.pageController,
+        onPageChanged: (index) {
+          controller.selectedIndex.value = index;
+        },
+        children: const [
+          HomePage(),  // Home screen
+          Courses(),  // Courses screen
+          Profile(),  // Profile screen
+        ],
+      ),
     );
   }
 }
@@ -44,9 +54,11 @@ class BottomNavigationMenu extends StatelessWidget {
 // Controller for managing navigation
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;  // Observable variable to keep track of the selected index
-  final screens = [
-    const HomePage(),  // Home screen
-    const Courses(),  // Courses screen
-    const Profile(),  // Profile screen
-  ];
+  final PageController pageController = PageController();  // Page controller for managing page views
+
+  @override
+  void onClose() {
+    pageController.dispose();
+    super.onClose();
+  }
 }

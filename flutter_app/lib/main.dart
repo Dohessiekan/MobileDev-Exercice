@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';  // Import Firebase core package
 import 'package:firebase_auth/firebase_auth.dart';  // Import FirebaseAuth package
-import 'blocs/courses_event.dart';
 import 'firebase_options.dart';  // Import your Firebase options
-import 'package:flutter_bloc/flutter_bloc.dart';  // Import flutter_bloc package
+import 'navbar.dart';
 import 'pages/login_page.dart';
 import 'register.dart';
 import 'homepage.dart';
 import 'Coursework.dart';
 import 'scorepage.dart';
 import 'courses.dart';
-import 'blocs/courses_bloc.dart';  // Import your CoursesBloc
-import 'repositories/courses_repository.dart';  // Import your CoursesRepository
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,14 +25,7 @@ void main() async {
     }
   });
 
-  final CoursesRepository repository = CoursesRepository();  // Initialize CoursesRepository
-
-  runApp(
-    BlocProvider(
-      create: (context) => CoursesBloc(repository)..add(FetchCourses()),  // Initialize CoursesBloc and add FetchCourses event
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -49,12 +39,33 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),  // Define the color scheme of the app with a seed color
         useMaterial3: true,  // Use Material 3 design principles
       ),
-      home: const WelcomePage(),  // Start the app with the WelcomePage widget
+      home: AuthWrapper(),  // Start the app with the AuthWrapper widget
     );
   }
 }
 
-// WelcomePage widget is the initial screen of the application
+// AuthWrapper widget gère la navigation entre les pages en fonction de l'état de l'utilisateur
+class AuthWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          if (snapshot.hasData) {
+            return BottomNavigationMenu();  // L'utilisateur est connecté, affiche la page d'accueil
+          } else {
+            return const WelcomePage();  // L'utilisateur n'est pas connecté, affiche la page d'accueil
+          }
+        } else {
+          return const Center(child: CircularProgressIndicator());  // Affiche un indicateur de chargement pendant la vérification de l'état de connexion
+        }
+      },
+    );
+  }
+}
+
+// WelcomePage widget est l'écran initial de l'application
 class WelcomePage extends StatelessWidget {
   const WelcomePage({Key? key}) : super(key: key);  // Constructor for the WelcomePage widget
 

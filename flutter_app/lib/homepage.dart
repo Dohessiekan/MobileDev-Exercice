@@ -4,6 +4,8 @@ import 'package:flutter_app/courses.dart';
 import 'package:flutter_app/detailcourse.dart';
 import 'package:get/get.dart';
 
+import 'ProfilePage.dart';
+
 // HomePage widget that serves as the main page of the application
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -87,9 +89,12 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                           Spacer(),  // Add space between the text and the profile picture
-                          CircleAvatar(
-                            radius: 33,  // Radius for the profile picture
-                            backgroundImage: AssetImage('assets/edquest.png'),  // Profile picture image
+                          GestureDetector(
+                            onTap: () => Get.to(() => Profile()),  // Navigate to the Profile page when tapped
+                            child: CircleAvatar(
+                              radius: 33,  // Radius for the profile picture
+                              backgroundImage: AssetImage('assets/edquest.png'),  // Profile picture image
+                            ),
                           ),
                         ],
                       ),

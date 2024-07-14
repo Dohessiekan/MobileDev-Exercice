@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth package
 
+import '../register.dart';
+import '../email_verification.dart';
 import '../navbar.dart';
 
 class LoginPage extends StatefulWidget {
@@ -140,8 +142,11 @@ class _LoginPageState extends State<LoginPage> {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
-                    // Add forgot password functionality here
-                  },
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) =>  ForgetPasswordPage()),  // Navigate to the RegisterPage when the button is pressed
+                  );
+                },
                   child: Text(
                     'Forgot Password?',
                     style: TextStyle(
@@ -182,8 +187,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      // Add sign up functionality here
-                    },
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) =>  RegisterPage()),  // Navigate to the RegisterPage when the button is pressed
+                  );
+                },
                     child: Text(
                       'Sign up',
                       style: TextStyle(
