@@ -1,7 +1,10 @@
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'main.dart';
+import 'package:image_picker/image_picker.dart';
+import 'settings_page.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -11,6 +14,44 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  File? _profileImage;
+  String? _username;
+  String? _profileImageURL;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUsername();
+    _fetchProfileImageURL();
+  }
+
+  // Fetch username from Firestore
+  Future<void> _fetchUsername() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        setState(() {
+          _username = userDoc['username']; // Assuming 'username' is the field in Firestore
+        });
+      }
+    }
+  }
+
+  // Fetch profile image URL from Firestore
+  Future<void> _fetchProfileImageURL() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        setState(() {
+          _profileImageURL = userDoc['profileImageURL'];
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +92,7 @@ class _ProfileState extends State<Profile> {
         ),
         IconButton(
           onPressed: () {
-            print('Icon settings pressed!');
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
           },
           icon: const Icon(
             Icons.settings,
@@ -93,9 +134,29 @@ class _ProfileState extends State<Profile> {
         ),
         Positioned(
           top: -70,
-          child: CircleAvatar(
-            radius: 50,
-            backgroundImage: AssetImage('assets/logo.png'),
+          child: Stack(
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: _profileImage != null
+                    ? FileImage(_profileImage!) as ImageProvider<Object>?
+                    : (_profileImageURL != null ? NetworkImage(_profileImageURL!) : null),
+                child: _profileImageURL == null && _profileImage == null
+                    ? Icon(Icons.person, size: 50, color: Colors.grey)
+                    : null,
+              ),
+              Positioned(
+                right: -5,
+                bottom: -10,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.camera_alt,
+                    color: Color.fromARGB(255, 187, 183, 183),
+                  ),
+                  onPressed: _pickProfileImage,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -104,9 +165,9 @@ class _ProfileState extends State<Profile> {
 
   // Display profile name
   Widget _buildProfileName() {
-    return const Text(
-      'Mark Brys',
-      style: TextStyle(
+    return Text(
+      _username ?? 'Loading...', // Display username or "Loading..." while fetching
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.black,
@@ -206,8 +267,7 @@ class _ProfileState extends State<Profile> {
         borderRadius: BorderRadius.circular(15.0),
         border: Border.all(
           color: Colors.grey,
-          width: 2.0,
-        ),
+          width: 2.0),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -240,5 +300,66 @@ class _ProfileState extends State<Profile> {
         ],
       ),
     );
+  }
+
+  // Function to pick profile image from gallery
+  Future<void> _pickProfileImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _profileImage = File(image.path);
+      });
+      _uploadProfileImage();
+    }
+  }
+
+  // Function to upload profile image to Firebase Storage
+  Future<void> _uploadProfileImage() async {
+    if (_profileImage == null) return;
+
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        String filePath = 'profile_images/${user.uid}.png';
+
+        // Start the upload
+        UploadTask uploadTask = FirebaseStorage.instance.ref(filePath).putFile(_profileImage!);
+
+        // Show a progress indicator while uploading
+        uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+          double progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          print('Upload progress: $progress%');
+        });
+
+        // Wait for the upload to complete
+        await uploadTask;
+
+        // Get the download URL
+        String downloadURL = await FirebaseStorage.instance.ref(filePath).getDownloadURL();
+
+        // Update Firestore with the new profile image URL
+        await _firestore.collection('users').doc(user.uid).update({
+          'profileImageURL': downloadURL,
+        });
+
+        // Update the profile image URL in the state
+        setState(() {
+          _profileImageURL = downloadURL;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profile image updated successfully')),
+        );
+      }
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update profile image: ${e.message}')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update profile image: $e')),
+      );
+    }
   }
 }

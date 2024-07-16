@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 import 'homepage.dart';
+import 'navbar.dart';
 import 'main.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -200,10 +202,17 @@ class _RegisterPageState extends State<RegisterPage> {
           email: _emailController.text,
           password: _passwordController.text,
         );
+
+        // Storing user data in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(credential.user?.uid).set({
+          'username': _usernameController.text,
+          'email': _emailController.text,
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Registration successful')),
         );
-        Get.to(() => const HomePage());
+        Get.to(() => const BottomNavigationMenu());
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           ScaffoldMessenger.of(context).showSnackBar(
