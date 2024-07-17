@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'courses.dart';
-import 'detailcourse.dart';
 import 'ProfilePage.dart';
  
 class HomePage extends StatefulWidget {
@@ -289,7 +288,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             TextButton(
-                              onPressed: () => Get.to(() => const Courses()),
+                              onPressed: () => Get.to(() => Courses()),
                               child: Text(
                                 'See All',
                                 style: TextStyle(
@@ -308,95 +307,92 @@ class _HomePageState extends State<HomePage> {
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: 3,
                           itemBuilder: (BuildContext context, int index) {
-                            return GestureDetector(
-                              onTap: () => Get.to(() => const Detailcourse()),
-                              child: Container(
-                                margin: EdgeInsets.only(bottom: 10, right: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 2,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 100,
-                                      height: 100,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(10),
-                                          bottomLeft: Radius.circular(10),
-                                        ),
-                                        image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: AssetImage('assets/course.jpg'),
-                                        ),
+                            return Container(
+                              margin: EdgeInsets.only(bottom: 10, right: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 100,
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10),
+                                      ),
+                                      image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: AssetImage('assets/course.jpg'),
                                       ),
                                     ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10.0),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Flutter Development',
-                                              style: TextStyle(
-                                                fontFamily: 'Fira Sans',
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Flutter Development',
+                                            style: TextStyle(
+                                              fontFamily: 'Fira Sans',
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          SizedBox(height: 5),
+                                          Text(
+                                            'Learn to build beautiful and responsive apps',
+                                            style: TextStyle(
+                                              fontFamily: 'Fira Sans',
+                                              fontSize: 14,
+                                              color: Colors.grey[700],
+                                            ),
+                                          ),
+                                          SizedBox(height: 5),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.star,
+                                                color: Colors.orange,
+                                                size: 20,
                                               ),
-                                            ),
-                                            SizedBox(height: 5),
-                                            Text(
-                                              'Learn to build beautiful and responsive apps',
-                                              style: TextStyle(
-                                                fontFamily: 'Fira Sans',
-                                                fontSize: 14,
-                                                color: Colors.grey[700],
+                                              SizedBox(width: 5),
+                                              Text(
+                                                '4.8',
+                                                style: TextStyle(
+                                                  fontFamily: 'Fira Sans',
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
-                                            SizedBox(height: 5),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.star,
-                                                  color: Colors.orange,
-                                                  size: 20,
+                                              SizedBox(width: 5),
+                                              Text(
+                                                '(1,200)',
+                                                style: TextStyle(
+                                                  fontFamily: 'Fira Sans',
+                                                  fontSize: 14,
+                                                  color: Colors.grey[700],
                                                 ),
-                                                SizedBox(width: 5),
-                                                Text(
-                                                  '4.8',
-                                                  style: TextStyle(
-                                                    fontFamily: 'Fira Sans',
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                SizedBox(width: 5),
-                                                Text(
-                                                  '(1,200)',
-                                                  style: TextStyle(
-                                                    fontFamily: 'Fira Sans',
-                                                    fontSize: 14,
-                                                    color: Colors.grey[700],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             );
                           },
