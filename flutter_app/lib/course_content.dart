@@ -7,9 +7,12 @@ import 'courses.dart';
 import 'coursework.dart';
 
 class CourseContent extends StatelessWidget {
+<<<<<<< HEAD
   final Course course;
 
   const CourseContent({Key? key, required this.course}) : super(key: key);
+=======
+>>>>>>> 8df7ff068c3d5fbfa35a2672db9f33c000c1162d
 
   @override
   Widget build(BuildContext context) {

@@ -1,8 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/detailcourse.dart'; // Import the course details page
 
-class Courses extends StatelessWidget {
+class Courses extends StatefulWidget {
   const Courses({Key? key}) : super(key: key);
+
+  @override
+  _CoursesState createState() => _CoursesState();
+}
+
+class _CoursesState extends State<Courses> {
+  String selectedCategory = 'History'; // Default selected category
 
   @override
   Widget build(BuildContext context) {
@@ -105,50 +113,44 @@ class Courses extends StatelessWidget {
                               scrollDirection: Axis.horizontal, // Horizontal scroll for categories
                               child: Row(
                                 children: [
-                                  Text(
-                                    'Popular', // Category text
-                                    style: TextStyle(
-                                      color: Color(0xFF999999), // Text color
-                                      fontSize: 14, // Text size
-                                      fontFamily: 'Ubuntu', // Font family
-                                    ),
+                                  CategoryItem(
+                                    category: 'History',
+                                    isSelected: selectedCategory == 'History',
+                                    onTap: () {
+                                      setState(() {
+                                        selectedCategory = 'History';
+                                      });
+                                    },
                                   ),
                                   SizedBox(width: 20), // Space between category texts
-                                  Text(
-                                    'Science', // Category text
-                                    style: TextStyle(
-                                      color: Color(0xFF999999), // Text color
-                                      fontSize: 14, // Text size
-                                      fontFamily: 'Ubuntu', // Font family
-                                    ),
+                                  CategoryItem(
+                                    category: 'Science',
+                                    isSelected: selectedCategory == 'Science',
+                                    onTap: () {
+                                      setState(() {
+                                        selectedCategory = 'Science';
+                                      });
+                                    },
                                   ),
                                   SizedBox(width: 20), // Space between category texts
-                                  Text(
-                                    'Mathematic', // Category text
-                                    style: TextStyle(
-                                      color: Color(0xFF999999), // Text color
-                                      fontSize: 14, // Text size
-                                      fontFamily: 'Ubuntu', // Font family
-                                    ),
+                                  CategoryItem(
+                                    category: 'Mathematics',
+                                    isSelected: selectedCategory == 'Mathematics',
+                                    onTap: () {
+                                      setState(() {
+                                        selectedCategory = 'Mathematics';
+                                      });
+                                    },
                                   ),
                                   SizedBox(width: 20), // Space between category texts
-                                  Column(
-                                    children: [
-                                      Text(
-                                        'Computer', // Selected category text
-                                        style: TextStyle(
-                                          color: Colors.blue, // Text color for the selected category
-                                          fontSize: 14, // Text size
-                                          fontFamily: 'Ubuntu', // Font family
-                                        ),
-                                      ),
-                                      Container(
-                                        width: 50, // Width of the indicator line
-                                        height: 2, // Height of the indicator line
-                                        color: Colors.blue, // Color of the indicator line
-                                        margin: EdgeInsets.only(top: 2), // Space above the line
-                                      ),
-                                    ],
+                                  CategoryItem(
+                                    category: 'Computer',
+                                    isSelected: selectedCategory == 'Computer',
+                                    onTap: () {
+                                      setState(() {
+                                        selectedCategory = 'Computer';
+                                      });
+                                    },
                                   ),
                                 ],
                               ),
@@ -157,69 +159,41 @@ class Courses extends StatelessWidget {
                           SizedBox(height: 25), // Space between the categories and the course cards
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                            child: Column(
-                              children: [
-                                // Course cards for different courses
-                                CourseCard(
-                                  title: 'UI UX Design',
-                                  subtitle: '5 chapters',
-                                  hours: '20h',
-                                  imagePath: 'assets/group1.png',
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Detailcourse(), // Navigate to the Detailcourse page
-                                      ),
-                                    );
-                                  },
-                                ),
-                                SizedBox(height: 15), // Space between course cards
-                                CourseCard(
-                                  title: 'Graphic Design',
-                                  subtitle: '5 chapters',
-                                  hours: '20h',
-                                  imagePath: 'assets/group1.png',
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Detailcourse(), // Navigate to the Detailcourse page
-                                      ),
-                                    );
-                                  },
-                                ),
-                                SizedBox(height: 15), // Space between course cards
-                                CourseCard(
-                                  title: 'Web Development',
-                                  subtitle: '8 chapters',
-                                  hours: '30h',
-                                  imagePath: 'assets/group1.png',
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Detailcourse(), // Navigate to the Detailcourse page
-                                      ),
-                                    );
-                                  },
-                                ),
-                                SizedBox(height: 15), // Space between course cards
-                                CourseCard(
-                                  title: 'Data Science',
-                                  subtitle: '6 chapters',
-                                  hours: '25h',
-                                  imagePath: 'assets/group1.png',
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Detailcourse(), // Navigate to the Detailcourse page
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
+                            child: StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('courses')
+                                  .where('category', isEqualTo: selectedCategory)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                                final courses = snapshot.data!.docs;
+                                return Column(
+                                  children: courses
+                                      .map((doc) {
+                                        final data = doc.data() as Map<String, dynamic>;
+                                        return Padding(
+                                          padding: const EdgeInsets.only(bottom: 15.0),
+                                          child: CourseCard(
+                                            title: data['title'],
+                                            subtitle: data['subtitle'],
+                                            hours: data['hours'],
+                                            image: data['image'],
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => Detailcourse(courseId: doc.id), // Navigate to the Detailcourse page
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      })
+                                      .toList(),
+                                );
+                              },
                             ),
                           ),
                           SizedBox(height: 25), // Space to avoid content overflow
@@ -245,15 +219,9 @@ class Courses extends StatelessWidget {
                               title: '3D Animation',
                               subtitle: '3 chapters',
                               hours: '15h',
-                              imagePath: 'assets/group1.png',
+                              image: 'assets/group1.png',
                               showRating: false, // Do not show the rating for the ongoing course
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Detailcourse(), // Navigate to the Detailcourse page
-                                  ),
-                                );
                               },
                             ),
                           ),
@@ -272,12 +240,54 @@ class Courses extends StatelessWidget {
   }
 }
 
-// Widget for displaying individual course cards
+class CategoryItem extends StatelessWidget {
+  final String category;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const CategoryItem({
+    Key? key,
+    required this.category,
+    required this.isSelected,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Text(
+            category,
+            style: TextStyle(
+              color: isSelected ? Colors.blue : Color(0xFF898989),
+              fontSize: 13,
+              fontFamily: 'Ubuntu',
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          if (isSelected)
+            Container(
+              width: 6,
+              height: 6,
+              margin: EdgeInsets.only(top: 3), // Add space between text and the dot
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                shape: BoxShape.circle,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class CourseCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String hours;
-  final String imagePath;
+  final String image;
   final bool showRating;
   final VoidCallback onTap;
 
@@ -286,100 +296,105 @@ class CourseCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.hours,
-    required this.imagePath,
+    required this.image,
     this.showRating = true,
-    required this.onTap,  // Callback when the card is tapped
+    required this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,  // Call the onTap function when the card is tapped
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(10), // Padding inside the card
+        width: double.infinity, // Make the course card as wide as the screen
+        height: 90, // Height of the course card
+        padding: EdgeInsets.symmetric(horizontal: 15), // Horizontal padding inside the course card
         decoration: BoxDecoration(
-          color: Colors.white, // Background color of the card
-          borderRadius: BorderRadius.circular(10), // Rounded corners for the card
+          color: Colors.white, // Background color of the course card
+          borderRadius: BorderRadius.circular(15), // Rounded corners
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.2), // Shadow color
-              spreadRadius: 2, // Shadow spread
-              blurRadius: 5, // Shadow blur radius
+              color: Colors.black.withOpacity(0.3), // Shadow color
+              blurRadius: 5, // Blur radius for the shadow
+              offset: Offset(0, 3), // Offset for the shadow
             ),
           ],
         ),
         child: Row(
           children: [
-            Image.asset(
-              imagePath, // Course image
-              width: 100, // Image width
-              height: 100, // Image height
+            // Display the course image
+            Container(
+              width: 60, // Width of the course image
+              height: 60, // Height of the course image
+              decoration: BoxDecoration(
+                color: Colors.blue, // Placeholder color if image is not loaded
+                borderRadius: BorderRadius.circular(10), // Rounded corners for the image
+                image: DecorationImage(
+                  image: NetworkImage(image), // Load image from the network
+                  fit: BoxFit.cover, // Fit the image within the container
+                ),
+              ),
             ),
-            SizedBox(width: 10), // Space between the image and the text
+            SizedBox(width: 15), // Space between the image and the text
+            // Display the course details
             Expanded(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center, // Center the text vertically
                 crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start (left)
                 children: [
                   Text(
                     title, // Course title
                     style: TextStyle(
-                      color: Colors.blue, // Text color
+                      color: Colors.black, // Text color
                       fontSize: 14, // Text size
                       fontFamily: 'Ubuntu', // Font family
                       fontWeight: FontWeight.bold, // Font weight
                     ),
                   ),
-                  SizedBox(height: 5), // Space between the title and the subtitle
-                  Row(
-                    children: [
-                      Icon(Icons.menu_book, size: 16, color: Color(0xFF999999)), // Icon for chapters
-                      SizedBox(width: 5), // Space between the icon and the subtitle
-                      Text(
-                        subtitle, // Subtitle with chapter count
-                        style: TextStyle(
-                          color: Color(0xFF999999), // Text color
-                          fontSize: 12, // Text size
-                          fontFamily: 'Ubuntu', // Font family
-                        ),
-                      ),
-                    ],
+                  Text(
+                    subtitle, // Course subtitle
+                    style: TextStyle(
+                      color: Color(0xFF898989), // Text color
+                      fontSize: 12, // Text size
+                      fontFamily: 'Ubuntu', // Font family
+                      fontWeight: FontWeight.normal, // Font weight
+                    ),
                   ),
-                  SizedBox(height: 5), // Space between the subtitle and the hours
+                  SizedBox(height: 10), // Space between subtitle and the additional information
                   Row(
                     children: [
-                      Icon(Icons.access_time, size: 16, color: Color(0xFF999999)), // Icon for hours
-                      SizedBox(width: 5), // Space between the icon and the hours text
+                      // Display the course duration
+                      Icon(Icons.schedule, color: Colors.blue, size: 12), // Clock icon
+                      SizedBox(width: 5), // Space between icon and the text
                       Text(
-                        hours, // Hours of the course
+                        hours, // Duration text
                         style: TextStyle(
-                          color: Color(0xFF999999), // Text color
+                          color: Colors.blue, // Text color
                           fontSize: 12, // Text size
                           fontFamily: 'Ubuntu', // Font family
+                          fontWeight: FontWeight.normal, // Font weight
                         ),
                       ),
+                      // Display rating if showRating is true
+                      if (showRating) ...[
+                        SizedBox(width: 10), // Space between duration and the rating
+                        Icon(Icons.star, color: Colors.orange, size: 12), // Star icon
+                        SizedBox(width: 5), // Space between icon and the text
+                        Text(
+                          '4.8', // Rating text
+                          style: TextStyle(
+                            color: Colors.orange, // Text color
+                            fontSize: 12, // Text size
+                            fontFamily: 'Ubuntu', // Font family
+                            fontWeight: FontWeight.normal, // Font weight
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ],
               ),
             ),
-            if (showRating) // Show the rating if showRating is true
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center, // Center the rating vertically
-                children: [
-                  Icon(Icons.star, size: 20, color: Colors.yellow), // Rating star icon
-                  SizedBox(height: 5), // Space between the icon and the rating text
-                  Text(
-                    '4.8', // Rating value
-                    style: TextStyle(
-                      color: Colors.black, // Text color
-                      fontSize: 12, // Text size
-                      fontFamily: 'Ubuntu', // Font family
-                    ),
-                  ),
-                ],
-              )
-            else
-              Icon(Icons.delete, size: 20, color: Colors.red), // Delete icon if showRating is false
           ],
         ),
       ),
