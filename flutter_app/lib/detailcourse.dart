@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/course_content.dart'; // Ensure this file contains the CourseContent class
+import 'package:flutter_app/models/courses_model.dart'; // Import your Course model
 import 'package:get/get.dart';
 
 // The Detailcourse widget displays detailed information about a specific course
@@ -8,6 +9,17 @@ class Detailcourse extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Dummy course data for demonstration
+    final Course course = Course(
+      id: '1',
+      name: 'UI UX Design',
+      description: 'A comprehensive course on UI/UX Design.',
+      chapters: [],
+      duration: '26 hours 30 min',
+      rating: 4.8,
+      imageUrl: 'assets/ui.PNG',
+    );
+
     return WillPopScope(
       onWillPop: () async {
         // Handle the back navigation event
@@ -44,47 +56,47 @@ class Detailcourse extends StatelessWidget {
             ),
           ],
         ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space out title and rating
-                children: [
-                  const Text(
-                    'UI UX Design', // Course title
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Ubuntu',
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space out title and rating
+                  children: [
+                    Text(
+                      course.name, // Course title
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Ubuntu',
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  Row(
-                    children: const [
-                      Icon(
-                        Icons.star, // Star icon for rating
-                        color: Colors.yellow,
-                        size: 24.0,
-                      ),
-                      SizedBox(width: 4), // Space between the star icon and rating text
-                      Text(
-                        '4.8', // Course rating
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Ubuntu',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.star, // Star icon for rating
+                          color: Colors.yellow,
+                          size: 24.0,
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 4), // Space between the star icon and rating text
+                        Text(
+                          course.rating.toString(), // Course rating
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Ubuntu',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16), // Space between the header and the content
-            Expanded(
-              child: Container(
+              const SizedBox(height: 16), // Space between the header and the content
+              Container(
                 decoration: const BoxDecoration(
                   color: Colors.white, // Background color of the content container
                   borderRadius: BorderRadius.only(
@@ -115,8 +127,8 @@ class Detailcourse extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16), // Rounded corners for the image container
-                          image: const DecorationImage(
-                            image: AssetImage('assets/ui.PNG'), // Course image
+                          image: DecorationImage(
+                            image: AssetImage(course.imageUrl), // Course image
                             fit: BoxFit.cover, // Cover the container
                           ),
                         ),
@@ -135,7 +147,7 @@ class Detailcourse extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Color(0xFF333333), // Icon background color
                             shape: BoxShape.circle, // Circular icon background
                           ),
@@ -174,7 +186,7 @@ class Detailcourse extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Color(0xFF333333), // Icon background color
                             shape: BoxShape.circle, // Circular icon background
                           ),
@@ -187,17 +199,17 @@ class Detailcourse extends StatelessWidget {
                         const SizedBox(width: 10), // Space between the icon and the text
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
-                          children: const [
+                          children: [
                             Text(
-                              '26 hours 30 min', // Course duration
-                              style: TextStyle(
+                              course.duration, // Course duration
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Ubuntu',
                               ),
                             ),
-                            SizedBox(height: 5), // Space between the duration text and description
-                            Text(
+                            const SizedBox(height: 5), // Space between the duration text and description
+                            const Text(
                               'Total duration of the course', // Description for course duration
                               style: TextStyle(
                                 fontSize: 12,
@@ -213,7 +225,7 @@ class Detailcourse extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Color(0xFF333333), // Icon background color
                             shape: BoxShape.circle, // Circular icon background
                           ),
@@ -251,7 +263,7 @@ class Detailcourse extends StatelessWidget {
                     const SizedBox(height: 40), // Space before the enroll button
                     Center(
                       child: ElevatedButton(
-                        onPressed: () => Get.to(()), // Navigate to the CourseContent page
+                        onPressed: () => Get.to(() => CourseContent(course: course)), // Navigate to the CourseContent page with course parameter
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFF9B32D), // Button background color
                           foregroundColor: Colors.white,
@@ -267,8 +279,8 @@ class Detailcourse extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

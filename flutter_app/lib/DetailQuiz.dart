@@ -122,7 +122,7 @@ class _DetailQuizState extends State<DetailQuiz> {
                           ),
                           DetailRow(
                             icon: Icons.timer,
-                            title: '1 hour 15 min',
+                            title: '20 min',
                             subtitle: 'Total duration of the quiz',
                           ),
                           DetailRow(

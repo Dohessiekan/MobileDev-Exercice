@@ -7,7 +7,9 @@ import 'courses.dart';
 import 'coursework.dart';
 
 class CourseContent extends StatelessWidget {
-  const CourseContent({super.key, required Course course});
+  final Course course;
+
+  const CourseContent({Key? key, required this.course}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -50,10 +52,10 @@ class CourseContent extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text(
-                  'UI UX Design',
-                  style: TextStyle(
+                  course.name, // Use course name
+                  style: const TextStyle(
                     color: Colors.white,
                     fontFamily: 'Ubuntu', // Set the font family to Ubuntu
                     fontSize: 24,
@@ -62,15 +64,15 @@ class CourseContent extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.star,
                       color: Colors.yellow, // Yellow star icon
                       size: 24.0,
                     ),
-                    SizedBox(width: 4), // Spacing between the star and the text
+                    const SizedBox(width: 4), // Spacing between the star and the text
                     Text(
-                      '4.8',
-                      style: TextStyle(
+                      course.rating.toString(), // Use course rating
+                      style: const TextStyle(
                         color: Colors.white, // White text color
                         fontFamily: 'Ubuntu',
                         fontSize: 18,
@@ -117,7 +119,7 @@ class CourseContent extends StatelessWidget {
                         children: List.generate(4, (index) {
                           // Generate week buttons dynamically
                           final isActive = index == 0; // Only first week is active
-                          final color = isActive ? Color(0xFFF9B32D) : Color(0xFF303384);
+                          final color = isActive ? const Color(0xFFF9B32D) : const Color(0xFF303384);
                           return Container(
                             padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
                             decoration: BoxDecoration(
@@ -215,7 +217,7 @@ class CourseContent extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
-                                  'Consider minor group of users',
+                                  'Design with the user in mind',
                                   style: TextStyle(
                                     fontFamily: 'Ubuntu',
                                     fontSize: 20,
@@ -240,7 +242,7 @@ class CourseContent extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
-                                  'Accessibility in Design',
+                                  'Design with the user in mind',
                                   style: TextStyle(
                                     fontFamily: 'Ubuntu',
                                     fontSize: 20,
@@ -265,7 +267,7 @@ class CourseContent extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
-                                  'Usability Testing',
+                                  'Design with the user in mind',
                                   style: TextStyle(
                                     fontFamily: 'Ubuntu',
                                     fontSize: 20,
