@@ -1,108 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ScorePage extends StatefulWidget {
-  const ScorePage({Key? key}) : super(key: key);
+  final int score;
+  const ScorePage({Key? key, required this.score}) : super(key: key);
 
   @override
   _ScorePageState createState() => _ScorePageState();
 }
 
 class _ScorePageState extends State<ScorePage> {
-  int _selectedIndex = 0;  // Variable to keep track of the selected index for the BottomNavigationBar
+  int _selectedIndex = 0; // Variable to keep track of the selected index for the BottomNavigationBar
 
-  // Method to handle navigation when an item is tapped in the BottomNavigationBar
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;  // Update the selected index
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(48, 51, 132, 1),  // Background color for the entire page
+      backgroundColor: const Color.fromRGBO(48, 51, 132, 1), // Background color for the entire page
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(15.0),  // Height of the AppBar
+        preferredSize: const Size.fromHeight(15.0), // Height of the AppBar
         child: AppBar(
-          backgroundColor: const Color(0xFF303384),  // Background color of the AppBar
+          backgroundColor: const Color(0xFF303384), // Background color of the AppBar
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(10.0),  // Padding around the content
+          padding: const EdgeInsets.all(10.0), // Padding around the content
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header row with a back button and the title 'Leaderboard'
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back),  // Back arrow icon
-                    color: Colors.white,  // Color of the icon
+                    icon: const Icon(Icons.arrow_back), // Back arrow icon
+                    color: Colors.white, // Color of the icon
                     onPressed: () {
-                      Navigator.pop(context);  // Navigate back to the previous screen
+                      Navigator.pop(context); // Navigate back to the previous screen
                     },
                   ),
-                  Text(
-                    'Leaderboard',  // Title text
+                  const Text(
+                    'Leaderboard', // Title text
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 25,  // Font size for the title
-                      fontWeight: FontWeight.bold,  // Bold text
+                      fontSize: 25, // Font size for the title
+                      fontWeight: FontWeight.bold, // Bold text
                     ),
                   ),
-                  SizedBox(width: 40),  // Spacer to align the title properly
+                  const SizedBox(width: 40), // Spacer to align the title properly
                 ],
               ),
-              SizedBox(height: 20),  // Space between the header and the buttons
-              // Row with two buttons for 'Weekly' and 'All Time' leaderboards
+              const SizedBox(height: 20),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),  // Horizontal padding for the buttons
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Row(
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Handle the 'Weekly' button press
-                        },
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          fixedSize: Size(150, 45),  // Button size
-                          backgroundColor: Color.fromARGB(137, 83, 87, 192),  // Button color
-                          elevation: 5,  // Button shadow
+                          fixedSize: const Size(150, 45),
+                          backgroundColor: const Color.fromARGB(137, 83, 87, 192),
+                          elevation: 5,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),  // Rounded corners
+                            borderRadius: BorderRadius.circular(15),
                           ),
                         ),
-                        child: Text(
-                          'Weekly',  // Button text
+                        child: const Text(
+                          'Weekly',
                           style: TextStyle(
-                            fontSize: 18,  // Font size of the text
-                            color: Colors.white,  // Text color
-                            fontFamily: 'FiraSansMedium',  // Font family for the text
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontFamily: 'FiraSansMedium',
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 20),  // Space between the two buttons
+                    const SizedBox(width: 20),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Handle the 'All Time' button press
-                        },
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          fixedSize: Size(150, 45),  // Button size
-                          backgroundColor: Color.fromARGB(103, 137, 141, 247),  // Button color
+                          fixedSize: const Size(150, 45),
+                          backgroundColor: const Color.fromARGB(103, 137, 141, 247),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),  // Rounded corners
+                            borderRadius: BorderRadius.circular(15),
                           ),
                         ),
-                        child: Text(
-                          'All Time',  // Button text
+                        child: const Text(
+                          'All Time',
                           style: TextStyle(
-                            fontSize: 18,  // Font size of the text
-                            color: const Color.fromARGB(153, 255, 255, 255),  // Text color
-                            fontFamily: 'FiraSansMedium',  // Font family for the text
+                            fontSize: 18,
+                            color: Color.fromARGB(153, 255, 255, 255),
+                            fontFamily: 'FiraSansMedium',
                           ),
                         ),
                       ),
@@ -110,53 +105,52 @@ class _ScorePageState extends State<ScorePage> {
                   ],
                 ),
               ),
-              SizedBox(height: 20),  // Space between the buttons and the score container
-              // Container displaying the user's score with a circular progress indicator
+              const SizedBox(height: 20),
               Container(
                 width: double.infinity,
-                height: 240,  // Height of the score container
+                height: 240, // Height of the score container
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(164, 30, 15, 99),  // Background color of the container
-                  borderRadius: BorderRadius.circular(20),  // Rounded corners
+                  color: const Color.fromARGB(164, 30, 15, 99), // Background color of the container
+                  borderRadius: BorderRadius.circular(20), // Rounded corners
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,  // Center content vertically
+                  mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 0.0),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 0.0),
                       child: Text(
-                        'You scored',  // Text above the score
+                        'You scored', // Text above the score
                         style: TextStyle(
-                          color: Colors.white,  // Text color
-                          fontSize: 24,  // Font size
-                          fontFamily: 'FiraSansBold',  // Font family for the text
-                          fontWeight: FontWeight.w800,  // Font weight
+                          color: Colors.white, // Text color
+                          fontSize: 24, // Font size
+                          fontFamily: 'FiraSansBold', // Font family for the text
+                          fontWeight: FontWeight.w800, // Font weight
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),  // Space between the text and the score indicator
+                    const SizedBox(height: 10), // Space between the text and the score indicator
                     Stack(
-                      alignment: Alignment.center,  // Center content in the stack
+                      alignment: Alignment.center, // Center content in the stack
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 150,
-                          height: 150,  // Size of the circular progress indicator
+                          height: 150, // Size of the circular progress indicator
                           child: CircularProgressIndicator(
-                            value: 37 / 50,  // Progress value
-                            strokeWidth: 10,  // Width of the progress bar
-                            backgroundColor: Colors.white,  // Background color of the progress bar
+                            value: 7.4, // Progress value
+                            strokeWidth: 10, // Width of the progress bar
+                            backgroundColor: Colors.white, // Background color of the progress bar
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Color.fromRGBO(48, 80, 132, 1),  // Progress bar color
+                              Color.fromRGBO(48, 80, 132, 1), // Progress bar color
                             ),
                           ),
                         ),
                         Text(
-                          '37/50',  // Displayed score
-                          style: TextStyle(
-                            color: Colors.white,  // Text color
-                            fontSize: 24,  // Font size
-                            fontFamily: 'FiraSansBold',  // Font family for the text
-                            fontWeight: FontWeight.w800,  // Font weight
+                          '${widget.score}/10', // Displayed score
+                          style: const TextStyle(
+                            color: Colors.white, // Text color
+                            fontSize: 24, // Font size
+                            fontFamily: 'FiraSansBold', // Font family for the text
+                            fontWeight: FontWeight.w800, // Font weight
                           ),
                         ),
                       ],
@@ -164,81 +158,94 @@ class _ScorePageState extends State<ScorePage> {
                   ],
                 ),
               ),
-              SizedBox(height: 20),  // Space between the score container and the leaderboard
-              // Container for the leaderboard list
+              const SizedBox(height: 20),
               Container(
-                height: MediaQuery.of(context).size.height * 0.6,  // Height of the leaderboard section
+                height: MediaQuery.of(context).size.height * 0.6, // Height of the leaderboard section
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade200,  // Background color of the container
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),  // Rounded top left corner
-                    topRight: Radius.circular(20),  // Rounded top right corner
+                  color: Colors.grey.shade200, // Background color of the container
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20), // Rounded top left corner
+                    topRight: Radius.circular(20), // Rounded top right corner
                   ),
                 ),
-                child: ListView.builder(
-                  padding: EdgeInsets.all(10.0),  // Padding for the list view
-                  itemCount: 10,  // Number of items in the list
-                  itemBuilder: (context, index) {
-                    Widget? crownIcon;
-                    if (index == 0) {
-                      crownIcon = Icon(Icons.whatshot, color: Colors.amber);  // Gold crown for the top player
-                    } else if (index == 1) {
-                      crownIcon = Icon(Icons.star, color: Colors.grey);  // Silver crown for the second player
-                    } else if (index == 2) {
-                      crownIcon = Icon(Icons.star_border, color: Colors.orange);  // Bronze crown for the third player
-                    } else {
-                      crownIcon = SizedBox.shrink();  // No icon for other players
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection('scores').orderBy('score', descending: true).snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
                     }
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),  // Vertical padding for each list item
-                      child: Container(
-                        padding: EdgeInsets.all(15.0),  // Padding inside the list item
-                        decoration: BoxDecoration(
-                          color: Colors.white,  // Background color of the list item
-                          borderRadius: BorderRadius.circular(15),  // Rounded corners
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,  // Shadow color
-                              blurRadius: 5,  // Shadow blur radius
-                              offset: Offset(0, 2),  // Shadow offset
+                    final scores = snapshot.data!.docs;
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(10.0),
+                      itemCount: scores.length,
+                      itemBuilder: (context, index) {
+                        final data = scores[index].data() as Map<String, dynamic>;
+                        final username = data['username'] ?? 'Anonymous';
+                        final points = data['score'];
+                        Widget? crownIcon;
+
+                        if (index == 0) {
+                          crownIcon = const Icon(Icons.whatshot, color: Colors.amber);
+                        } else if (index == 1) {
+                          crownIcon = const Icon(Icons.star, color: Colors.grey);
+                        } else if (index == 2) {
+                          crownIcon = const Icon(Icons.star_border, color: Colors.orange);
+                        } else {
+                          crownIcon = const SizedBox.shrink();
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          child: Container(
+                            padding: const EdgeInsets.all(15.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 30,  // Avatar size
-                              backgroundImage: AssetImage('assets/edquest.png'),  // Avatar image
-                            ),
-                            SizedBox(width: 20),  // Space between avatar and text
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'User ${index + 1}',  // Example username
-                                    style: TextStyle(
-                                      fontSize: 18,  // Font size for the username
-                                      fontFamily: 'FiraSansMedium',  // Font family for the text
-                                    ),
+                            child: Row(
+                              children: [
+                                const CircleAvatar(
+                                  radius: 30,
+                                  backgroundImage: AssetImage('assets/edquest.png'),
+                                ),
+                                const SizedBox(width: 20),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        username,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontFamily: 'FiraSansMedium',
+                                        ),
+                                      ),
+                                      Text(
+                                        '$points pts',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'FiraSansMedium',
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    '${(50 - index * 5).clamp(0, 50)} pts',  // Example points calculation
-                                    style: TextStyle(
-                                      fontSize: 16,  // Font size for the points
-                                      fontFamily: 'FiraSansMedium',  // Font family for the text
-                                      color: Colors.grey,  // Text color
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(width: 10),
+                                crownIcon ?? const SizedBox.shrink(),
+                              ],
                             ),
-                            SizedBox(width: 10),  // Space between text and crown icon
-                            crownIcon ?? SizedBox.shrink(),  // Display the crown icon if any
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -247,7 +254,6 @@ class _ScorePageState extends State<ScorePage> {
           ),
         ),
       ),
-
     );
   }
 }
