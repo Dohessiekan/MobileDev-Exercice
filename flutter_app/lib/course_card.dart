@@ -4,42 +4,40 @@ class CourseCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String hours;
-  final String imagePath;
+  final String image;
+  final double rating;
   final VoidCallback onTap;
 
-  CourseCard({
+  const CourseCard({
+    Key? key,
     required this.title,
     required this.subtitle,
     required this.hours,
-    required this.imagePath,
-    required this.onTap, required String image,
-  });
+    required this.image,
+    required this.rating,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: Offset(0, 3),
-            ),
-          ],
+      child: Card(
+        elevation: 5,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
           children: [
-            Image.asset(
-              imagePath,
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                image,
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
             ),
             SizedBox(width: 10),
             Expanded(
@@ -48,25 +46,18 @@ class CourseCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
+                  Text(subtitle),
                   SizedBox(height: 5),
-                  Text(
-                    hours,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.blue,
-                    ),
+                  Text('Hours: $hours'),
+                  SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Icon(Icons.star, color: Colors.yellow, size: 16),
+                      SizedBox(width: 5),
+                      Text(rating.toString()),
+                    ],
                   ),
                 ],
               ),

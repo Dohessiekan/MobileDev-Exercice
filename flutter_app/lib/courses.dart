@@ -180,6 +180,7 @@ class _CoursesState extends State<Courses> {
                                             subtitle: data['subtitle'],
                                             hours: data['hours'],
                                             image: data['image'],
+                                            rating: data['rating'], // Fetch the rating from Firestore
                                             onTap: () {
                                               Navigator.push(
                                                 context,
@@ -221,8 +222,7 @@ class _CoursesState extends State<Courses> {
                               hours: '15h',
                               image: 'assets/group1.png',
                               showRating: false, // Do not show the rating for the ongoing course
-                              onTap: () {
-                              },
+                              onTap: () {},
                             ),
                           ),
                           SizedBox(height: 25), // Space to avoid content overflow
@@ -289,6 +289,7 @@ class CourseCard extends StatelessWidget {
   final String hours;
   final String image;
   final bool showRating;
+  final double rating;
   final VoidCallback onTap;
 
   const CourseCard({
@@ -297,8 +298,9 @@ class CourseCard extends StatelessWidget {
     required this.subtitle,
     required this.hours,
     required this.image,
-    this.showRating = true,
     required this.onTap,
+    this.showRating = true,
+    this.rating = 0.0, // Default rating value
   }) : super(key: key);
 
   @override
@@ -306,90 +308,89 @@ class CourseCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: double.infinity, // Make the course card as wide as the screen
-        height: 90, // Height of the course card
-        padding: EdgeInsets.symmetric(horizontal: 15), // Horizontal padding inside the course card
+        width: double.infinity,
+        height: 90,
+        padding: EdgeInsets.symmetric(horizontal: 15),
         decoration: BoxDecoration(
-          color: Colors.white, // Background color of the course card
-          borderRadius: BorderRadius.circular(15), // Rounded corners
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3), // Shadow color
-              blurRadius: 5, // Blur radius for the shadow
-              offset: Offset(0, 3), // Offset for the shadow
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: Offset(0, 3),
             ),
           ],
         ),
         child: Row(
           children: [
-            // Display the course image
             Container(
-              width: 60, // Width of the course image
-              height: 60, // Height of the course image
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
-                color: Colors.blue, // Placeholder color if image is not loaded
-                borderRadius: BorderRadius.circular(10), // Rounded corners for the image
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
-                  image: NetworkImage(image), // Load image from the network
-                  fit: BoxFit.cover, // Fit the image within the container
+                  image: NetworkImage(image),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-            SizedBox(width: 15), // Space between the image and the text
-            // Display the course details
+            SizedBox(width: 15),
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center, // Center the text vertically
-                crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start (left)
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title, // Course title
+                    title,
                     style: TextStyle(
-                      color: Colors.black, // Text color
-                      fontSize: 14, // Text size
-                      fontFamily: 'Ubuntu', // Font family
-                      fontWeight: FontWeight.bold, // Font weight
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontFamily: 'Ubuntu',
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    subtitle, // Course subtitle
+                    subtitle,
                     style: TextStyle(
-                      color: Color(0xFF898989), // Text color
-                      fontSize: 12, // Text size
-                      fontFamily: 'Ubuntu', // Font family
-                      fontWeight: FontWeight.normal, // Font weight
+                      color: Color(0xFF898989),
+                      fontSize: 12,
+                      fontFamily: 'Ubuntu',
+                      fontWeight: FontWeight.normal,
                     ),
                   ),
-                  SizedBox(height: 10), // Space between subtitle and the additional information
+                  SizedBox(height: 10),
                   Row(
                     children: [
-                      // Display the course duration
-                      Icon(Icons.schedule, color: Colors.blue, size: 12), // Clock icon
-                      SizedBox(width: 5), // Space between icon and the text
+                      Icon(Icons.schedule, color: Colors.blue, size: 12),
+                      SizedBox(width: 5),
                       Text(
-                        hours, // Duration text
+                        hours,
                         style: TextStyle(
-                          color: Colors.blue, // Text color
-                          fontSize: 12, // Text size
-                          fontFamily: 'Ubuntu', // Font family
-                          fontWeight: FontWeight.normal, // Font weight
+                          color: Colors.blue,
+                          fontSize: 12,
+                          fontFamily: 'Ubuntu',
+                          fontWeight: FontWeight.normal,
                         ),
                       ),
-                      // Display rating if showRating is true
-                      if (showRating) ...[
-                        SizedBox(width: 10), // Space between duration and the rating
-                        Icon(Icons.star, color: Colors.orange, size: 12), // Star icon
-                        SizedBox(width: 5), // Space between icon and the text
-                        Text(
-                          '4.8', // Rating text
-                          style: TextStyle(
-                            color: Colors.orange, // Text color
-                            fontSize: 12, // Text size
-                            fontFamily: 'Ubuntu', // Font family
-                            fontWeight: FontWeight.normal, // Font weight
-                          ),
+                      if (showRating)
+                        Row(
+                          children: [
+                            SizedBox(width: 10),
+                            Icon(Icons.star, color: Colors.orange, size: 12),
+                            SizedBox(width: 5),
+                            Text(
+                              rating.toString(),
+                              style: TextStyle(
+                                color: Colors.orange,
+                                fontSize: 12,
+                                fontFamily: 'Ubuntu',
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
                     ],
                   ),
                 ],

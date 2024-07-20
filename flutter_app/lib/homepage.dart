@@ -5,7 +5,8 @@ import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'courses.dart';
 import 'ProfilePage.dart';
- 
+import 'detailcourse.dart'; // Import the Detailcourse page
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -71,6 +72,17 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<List<DocumentSnapshot>> _fetchPopularCourses() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('courses')
+        .where('rating', isGreaterThanOrEqualTo: 3.5)
+        .orderBy('rating', descending: true)
+        .limit(4) // Increased limit to fetch 4 courses
+        .get();
+
+    return querySnapshot.docs;
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -133,7 +145,6 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                      
                     ],
                   ),
                   SizedBox(height: 20),
@@ -263,7 +274,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 20),
                   Container(
-                    padding: EdgeInsets.only(top: 20, left: 20, right: 10),
+                    padding: EdgeInsets.only(top: 20, left: 20, right: 20),
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -301,99 +312,121 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 10),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: 3,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              margin: EdgeInsets.only(bottom: 10, right: 10),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 100,
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10),
-                                        bottomLeft: Radius.circular(10),
+                        FutureBuilder<List<DocumentSnapshot>>(
+                          future: _fetchPopularCourses(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            }
+
+                            if (snapshot.hasError) {
+                              return Center(child: Text('Error fetching courses'));
+                            }
+
+                            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return Center(child: Text('No popular courses found'));
+                            }
+
+                            List<DocumentSnapshot> courses = snapshot.data!;
+
+                            return Column(
+                              children: [
+                                ...courses.map((courseDoc) {
+                                  var courseData = courseDoc.data() as Map<String, dynamic>;
+                                  return GestureDetector(
+                                    onTap: () => Get.to(() => Detailcourse(courseId: courseDoc.id)),
+                                    child: Container(
+                                      padding: EdgeInsets.all(8),
+                                      margin: EdgeInsets.symmetric(vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Color.fromARGB(150, 5, 5, 5).withOpacity(0.3),
+                                            spreadRadius: 1,
+                                            blurRadius: 4,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
                                       ),
-                                      image: DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: AssetImage('assets/course.jpg'),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                      child: Row(
                                         children: [
-                                          Text(
-                                            'Flutter Development',
-                                            style: TextStyle(
-                                              fontFamily: 'Fira Sans',
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.network(
+                                              courseData['image'] ?? '',
+                                              height: 60,
+                                              width: 60,
+                                              fit: BoxFit.cover,
                                             ),
                                           ),
-                                          SizedBox(height: 5),
-                                          Text(
-                                            'Learn to build beautiful and responsive apps',
-                                            style: TextStyle(
-                                              fontFamily: 'Fira Sans',
-                                              fontSize: 14,
-                                              color: Colors.grey[700],
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  courseData['title'] ?? 'No Title',
+                                                  style: TextStyle(
+                                                    fontFamily: 'Fira Sans',
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 4),
+                                                Text(
+                                                  courseData['subtitle'] ?? 'No Subtitle',
+                                                  style: TextStyle(
+                                                    fontFamily: 'Fira Sans',
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 4),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.access_time,
+                                                      color: Colors.blue,
+                                                      size: 16,
+                                                    ),
+                                                    SizedBox(width: 4),
+                                                    Text(
+                                                      '${courseData['hours'] ?? 0}',
+                                                      style: TextStyle(
+                                                        fontFamily: 'Fira Sans',
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: Colors.blue,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 8),
+                                                    Icon(
+                                                      Icons.star,
+                                                      color: Colors.orange,
+                                                      size: 16,
+                                                    ),
+                                                    SizedBox(width: 4),
+                                                    Text(
+                                                      '${courseData['rating'] ?? 0}',
+                                                      style: TextStyle(
+                                                        fontFamily: 'Fira Sans',
+                                                        fontSize: 12,
+                                                        color: Colors.orange,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
                                             ),
-                                          ),
-                                          SizedBox(height: 5),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.star,
-                                                color: Colors.orange,
-                                                size: 20,
-                                              ),
-                                              SizedBox(width: 5),
-                                              Text(
-                                                '4.8',
-                                                style: TextStyle(
-                                                  fontFamily: 'Fira Sans',
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(width: 5),
-                                              Text(
-                                                '(1,200)',
-                                                style: TextStyle(
-                                                  fontFamily: 'Fira Sans',
-                                                  fontSize: 14,
-                                                  color: Colors.grey[700],
-                                                ),
-                                              ),
-                                            ],
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  );
+                                }).toList(),
+                                SizedBox(height: 10), // Add a small space at the end
+                              ],
                             );
                           },
                         ),

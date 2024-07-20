@@ -1,12 +1,116 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_app/course_content.dart'; // Ensure this file contains the CourseContent class
 import 'package:get/get.dart';
 
-class Detailcourse extends StatelessWidget {
+class Detailcourse extends StatefulWidget {
   final String courseId;
 
   const Detailcourse({Key? key, required this.courseId}) : super(key: key);
+
+  @override
+  _DetailcourseState createState() => _DetailcourseState();
+}
+
+class _DetailcourseState extends State<Detailcourse> {
+  double currentRating = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentRating();
+  }
+
+  void _fetchCurrentRating() async {
+    DocumentSnapshot courseDoc = await FirebaseFirestore.instance.collection('courses').doc(widget.courseId).get();
+    if (courseDoc.exists) {
+      setState(() {
+        currentRating = courseDoc['rating'] ?? 0.0;
+      });
+    }
+  }
+
+  void _submitRating(double rating) async {
+    DocumentReference courseRef = FirebaseFirestore.instance.collection('courses').doc(widget.courseId);
+
+    FirebaseFirestore.instance.runTransaction((transaction) async {
+      DocumentSnapshot courseDoc = await transaction.get(courseRef);
+
+      if (!courseDoc.exists) {
+        throw Exception("Course does not exist!");
+      }
+
+      int numberOfRatings = courseDoc['numberOfRatings'] ?? 0;
+      double totalRating = courseDoc['totalRating'] ?? 0.0;
+
+      numberOfRatings++;
+      totalRating += rating;
+
+      double newRating = totalRating / numberOfRatings;
+
+      transaction.update(courseRef, {
+        'numberOfRatings': numberOfRatings,
+        'totalRating': totalRating,
+        'rating': newRating,
+      });
+
+      setState(() {
+        currentRating = newRating;
+      });
+    });
+  }
+
+  void _enrollInCourse() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      // Handle user not logged in
+      return;
+    }
+
+    DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+    FirebaseFirestore.instance.runTransaction((transaction) async {
+      DocumentSnapshot userDoc = await transaction.get(userRef);
+
+      if (!userDoc.exists) {
+        throw Exception("User does not exist!");
+      }
+
+      List<dynamic> enrolledCourses = userDoc['enrolledCourses'] ?? [];
+      if (!enrolledCourses.contains(widget.courseId)) {
+        enrolledCourses.add(widget.courseId);
+      }
+
+      transaction.update(userRef, {
+        'enrolledCourses': enrolledCourses,
+      });
+    }).then((_) {
+      // Show confirmation dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Enrollment Confirmation'),
+            content: const Text('You have successfully enrolled in this course.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                  Get.to(() => CourseContent()); // Navigate to CourseContent page
+                },
+                child: const Text('Continue'),
+              ),
+            ],
+          );
+        },
+      );
+    }).catchError((error) {
+      // Handle errors
+      print('Error enrolling in course: $error');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +147,7 @@ class Detailcourse extends StatelessWidget {
           ],
         ),
         body: FutureBuilder<DocumentSnapshot>(
-          future: FirebaseFirestore.instance.collection('courses').doc(courseId).get(),
+          future: FirebaseFirestore.instance.collection('courses').doc(widget.courseId).get(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -76,16 +180,16 @@ class Detailcourse extends StatelessWidget {
                         ),
                       ),
                       Row(
-                        children: const [
-                          Icon(
+                        children: [
+                          const Icon(
                             Icons.star,
                             color: Colors.yellow,
                             size: 24.0,
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
-                            '4.8',
-                            style: TextStyle(
+                            currentRating.toStringAsFixed(1),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontFamily: 'Ubuntu',
                               fontSize: 18,
@@ -108,67 +212,71 @@ class Detailcourse extends StatelessWidget {
                       ),
                     ),
                     padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height * 0.3,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              image: DecorationImage(
-                                image: NetworkImage(imageUrl),
-                                fit: BoxFit.cover,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * 0.3,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                image: DecorationImage(
+                                  image: NetworkImage(imageUrl),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Summary of the course:',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Ubuntu',
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        _buildCourseDetail(
-                          icon: Icons.menu_book,
-                          title: subtitle,
-                          description: 'Complete the coursework then attempt the quiz.',
-                        ),
-                        const SizedBox(height: 20),
-                        _buildCourseDetail(
-                          icon: Icons.access_time,
-                          title: hours,
-                          description: 'Total duration of the course',
-                        ),
-                        const SizedBox(height: 20),
-                        _buildCourseDetail(
-                          icon: Icons.star,
-                          title: 'Win 10 stars',
-                          description: 'Answer all questions of the quiz correctly',
-                        ),
-                        const SizedBox(height: 40),
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () => Get.to(() => CourseContent()),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFF9B32D),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 54, vertical: 20),
-                              textStyle: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Summary of the course:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Ubuntu',
                             ),
-                            child: const Text('Enroll'),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 10),
+                          _buildCourseDetail(
+                            icon: Icons.menu_book,
+                            title: subtitle,
+                            description: 'Complete the coursework then attempt the quiz.',
+                          ),
+                          const SizedBox(height: 20),
+                          _buildCourseDetail(
+                            icon: Icons.access_time,
+                            title: hours,
+                            description: 'Total duration of the course',
+                          ),
+                          const SizedBox(height: 20),
+                          _buildCourseDetail(
+                            icon: Icons.star,
+                            title: 'Win 10 stars',
+                            description: 'Answer all questions of the quiz correctly',
+                          ),
+                          const SizedBox(height: 20),
+                          _buildRatingSection(),
+                          const SizedBox(height: 20),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: _enrollInCourse,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFF9B32D),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 54, vertical: 20),
+                                textStyle: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              child: const Text('Enroll'),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -216,6 +324,35 @@ class Detailcourse extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRatingSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Rate this course:',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Ubuntu',
+          ),
+        ),
+        Row(
+          children: List.generate(5, (index) {
+            return IconButton(
+              icon: Icon(
+                index < currentRating ? Icons.star : Icons.star_border,
+                color: Colors.yellow,
+              ),
+              onPressed: () {
+                _submitRating(index + 1.0);
+              },
+            );
+          }),
         ),
       ],
     );

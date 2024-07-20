@@ -7,6 +7,8 @@ class AuthService {
   // Méthode pour obtenir l'utilisateur courant
   User? get currentUser => _auth.currentUser;
 
+  Object? get userId => null;
+
   // Méthode pour récupérer le nom d'utilisateur
   Future<String> fetchUsername() async {
     try {
