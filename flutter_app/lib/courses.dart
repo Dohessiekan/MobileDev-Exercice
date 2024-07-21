@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/detailcourse.dart'; // Import the course details page
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Courses extends StatefulWidget {
   const Courses({Key? key}) : super(key: key);
@@ -213,17 +214,68 @@ class _CoursesState extends State<Courses> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 15), // Space between section title and the course card
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                            child: CourseCard(
-                              title: '3D Animation',
-                              subtitle: '3 chapters',
-                              hours: '15h',
-                              image: 'assets/group1.png',
-                              showRating: false, // Do not show the rating for the ongoing course
-                              onTap: () {},
-                            ),
+                          SizedBox(height: 15), // Space between section title and the course cards
+                          StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(child: CircularProgressIndicator());
+                              }
+                              final user = snapshot.data!.data() as Map<String, dynamic>;
+                              final enrolledCourses = user['enrolledCourses'] as List<dynamic>? ?? [];
+
+                              if (enrolledCourses.isEmpty) {
+                                return Center(
+                                  child: Text(
+                                    'No courses enrolled yet.',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 14,
+                                      fontFamily: 'Ubuntu',
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                                child: Column(
+                                  children: enrolledCourses.map((courseId) {
+                                    return FutureBuilder<DocumentSnapshot>(
+                                      future: FirebaseFirestore.instance.collection('courses').doc(courseId).get(),
+                                      builder: (context, snapshot) {
+                                        if (!snapshot.hasData) {
+                                          return Center(child: CircularProgressIndicator());
+                                        }
+                                        final courseData = snapshot.data!.data() as Map<String, dynamic>;
+                                        return Padding(
+                                          padding: const EdgeInsets.only(bottom: 15.0),
+                                          child: CourseCard(
+                                            title: courseData['title'],
+                                            subtitle: courseData['subtitle'],
+                                            hours: courseData['hours'],
+                                            image: courseData['image'],
+                                            rating: courseData['rating'],
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => Detailcourse(courseId: courseId),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                              );
+                            },
                           ),
                           SizedBox(height: 25), // Space to avoid content overflow
                         ],
@@ -240,6 +292,7 @@ class _CoursesState extends State<Courses> {
   }
 }
 
+// CategoryItem widget to handle category selection and styling
 class CategoryItem extends StatelessWidget {
   final String category;
   final bool isSelected;
@@ -261,21 +314,19 @@ class CategoryItem extends StatelessWidget {
           Text(
             category,
             style: TextStyle(
-              color: isSelected ? Colors.blue : Color(0xFF898989),
-              fontSize: 13,
-              fontFamily: 'Ubuntu',
-              fontWeight: FontWeight.bold,
+              color: isSelected ? Colors.blue : Colors.grey, // Change text color based on selection
+              fontSize: 16, // Text size
+              fontFamily: 'Ubuntu', // Font family
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, // Change font weight based on selection
             ),
           ),
           if (isSelected)
             Container(
-              width: 6,
-              height: 6,
-              margin: EdgeInsets.only(top: 3), // Add space between text and the dot
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                shape: BoxShape.circle,
-              ),
+              
+              margin: EdgeInsets.only(top: 5), // Margin between text and underline
+              width: 20, // Width of the underline
+              height: 2, // Height of the underline
+              color: Colors.blue, // Color of the underline
             ),
         ],
       ),
@@ -283,12 +334,12 @@ class CategoryItem extends StatelessWidget {
   }
 }
 
+// CourseCard widget to display each course's details
 class CourseCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String hours;
   final String image;
-  final bool showRating;
   final double rating;
   final VoidCallback onTap;
 
@@ -298,9 +349,8 @@ class CourseCard extends StatelessWidget {
     required this.subtitle,
     required this.hours,
     required this.image,
+    required this.rating,
     required this.onTap,
-    this.showRating = true,
-    this.rating = 0.0, // Default rating value
   }) : super(key: key);
 
   @override
@@ -308,45 +358,43 @@ class CourseCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: double.infinity,
-        height: 90,
-        padding: EdgeInsets.symmetric(horizontal: 15),
+        padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 5,
-              offset: Offset(0, 3),
+              color: Colors.black26,
+              blurRadius: 6,
+              offset: Offset(0, 2),
             ),
           ],
         ),
         child: Row(
           children: [
+            // Course image
             Container(
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(15),
                 image: DecorationImage(
                   image: NetworkImage(image),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            SizedBox(width: 15),
+            SizedBox(width: 10), // Space between image and text
+            // Course details
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
+                      color: Colors.blue,
+                      fontSize: 16,
                       fontFamily: 'Ubuntu',
                       fontWeight: FontWeight.bold,
                     ),
@@ -354,16 +402,27 @@ class CourseCard extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: Color(0xFF898989),
-                      fontSize: 12,
+                      color: Colors.grey,
+                      fontSize: 14,
                       fontFamily: 'Ubuntu',
                       fontWeight: FontWeight.normal,
                     ),
                   ),
-                  SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.schedule, color: Colors.blue, size: 12),
+                      Icon(Icons.star, color: Colors.orange, size: 20),
+                      SizedBox(width: 5),
+                      Text(
+                        rating.toString(),
+                        style: TextStyle(
+                          color: Colors.orange,
+                          fontSize: 14,
+                          fontFamily: 'Ubuntu',
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                      SizedBox(width: 10), // Space between rating and hours
+                      Icon(Icons.schedule, color: Colors.blue, size: 14), // Blue icon next to hours
                       SizedBox(width: 5),
                       Text(
                         hours,
@@ -374,23 +433,6 @@ class CourseCard extends StatelessWidget {
                           fontWeight: FontWeight.normal,
                         ),
                       ),
-                      if (showRating)
-                        Row(
-                          children: [
-                            SizedBox(width: 10),
-                            Icon(Icons.star, color: Colors.orange, size: 12),
-                            SizedBox(width: 5),
-                            Text(
-                              rating.toString(),
-                              style: TextStyle(
-                                color: Colors.orange,
-                                fontSize: 12,
-                                fontFamily: 'Ubuntu',
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ],
-                        ),
                     ],
                   ),
                 ],

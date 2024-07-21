@@ -15,11 +15,13 @@ class Detailcourse extends StatefulWidget {
 
 class _DetailcourseState extends State<Detailcourse> {
   double currentRating = 0.0;
+  bool isEnrolled = false; // Track enrollment status
 
   @override
   void initState() {
     super.initState();
     _fetchCurrentRating();
+    _checkEnrollmentStatus(); // Check enrollment status on initialization
   }
 
   void _fetchCurrentRating() async {
@@ -27,6 +29,24 @@ class _DetailcourseState extends State<Detailcourse> {
     if (courseDoc.exists) {
       setState(() {
         currentRating = courseDoc['rating'] ?? 0.0;
+      });
+    }
+  }
+
+  void _checkEnrollmentStatus() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      // Handle user not logged in
+      return;
+    }
+
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+
+    if (userDoc.exists) {
+      List<dynamic> enrolledCourses = userDoc['enrolledCourses'] ?? [];
+      setState(() {
+        isEnrolled = enrolledCourses.contains(widget.courseId);
       });
     }
   }
@@ -98,7 +118,7 @@ class _DetailcourseState extends State<Detailcourse> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
-                  Get.to(() => CourseContent()); // Navigate to CourseContent page
+                  Get.to(() => CourseContent(courseId: widget.courseId)); // Navigate to CourseContent page with courseId
                 },
                 child: const Text('Continue'),
               ),
@@ -262,7 +282,9 @@ class _DetailcourseState extends State<Detailcourse> {
                           const SizedBox(height: 20),
                           Center(
                             child: ElevatedButton(
-                              onPressed: _enrollInCourse,
+                              onPressed: isEnrolled ? () {
+                                Get.to(() => CourseContent(courseId: widget.courseId)); // Navigate to CourseContent page
+                              } : _enrollInCourse,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFF9B32D),
                                 foregroundColor: Colors.white,
@@ -272,7 +294,7 @@ class _DetailcourseState extends State<Detailcourse> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              child: const Text('Enroll'),
+                              child: Text(isEnrolled ? 'Go to Course' : 'Enroll'),
                             ),
                           ),
                         ],
@@ -334,14 +356,16 @@ class _DetailcourseState extends State<Detailcourse> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Rate this course:',
+          'Rate this course',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             fontFamily: 'Ubuntu',
           ),
         ),
+        const SizedBox(height: 10),
         Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: List.generate(5, (index) {
             return IconButton(
               icon: Icon(

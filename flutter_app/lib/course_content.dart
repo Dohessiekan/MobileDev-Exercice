@@ -1,41 +1,145 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/courses_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'DetailQuiz.dart';
-import 'course_content.dart';
-import 'courses.dart';
 import 'coursework.dart';
 
-class CourseContent extends StatelessWidget {
+class CourseContent extends StatefulWidget {
+  final String courseId; // Pass the course ID when navigating to this page
+
+  const CourseContent({Key? key, required this.courseId}) : super(key: key);
+
+  @override
+  _CourseContentState createState() => _CourseContentState();
+}
+
+class _CourseContentState extends State<CourseContent> {
+  int _activeWeek = 0;
+  Map<String, dynamic>? _courseData;
+  List<Map<String, dynamic>> _weeksContent = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCourseData();
+  }
+
+  Future<void> _fetchCourseData() async {
+    try {
+      // Fetch course data
+      DocumentSnapshot courseSnapshot = await FirebaseFirestore.instance
+          .collection('courses')
+          .doc(widget.courseId)
+          .get();
+
+      if (!courseSnapshot.exists) {
+        throw Exception('Course data not found');
+      }
+
+      setState(() {
+        _courseData = courseSnapshot.data() as Map<String, dynamic>;
+      });
+
+      // Fetch coursework data
+      QuerySnapshot courseworkSnapshot = await FirebaseFirestore.instance
+          .collection('courses')
+          .doc(widget.courseId)
+          .collection('coursework')
+          .get();
+
+      List<Map<String, dynamic>> weeks = await Future.wait(courseworkSnapshot.docs.map((weekDoc) async {
+        Map<String, dynamic> weekData = weekDoc.data() as Map<String, dynamic>;
+
+        // Fetch chapters data for each week
+        QuerySnapshot chaptersSnapshot = await FirebaseFirestore.instance
+            .collection('courses')
+            .doc(widget.courseId)
+            .collection('coursework')
+            .doc(weekDoc.id)
+            .collection('chapters')
+            .get();
+
+        weekData['chapters'] = chaptersSnapshot.docs
+            .map((doc) => (doc.data() as Map<String, dynamic>)['title'])
+            .toList();
+
+        return weekData;
+      }).toList());
+
+      setState(() {
+        _weeksContent = weeks;
+      });
+
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  void _setActiveWeek(int week) {
+    setState(() {
+      _activeWeek = week;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_courseData == null || _weeksContent.isEmpty) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF303384),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF303384),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          title: const Text(
+            'Course Program',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Ubuntu',
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.account_circle, color: Colors.white),
+              onPressed: () {
+                // Add your profile icon action here
+              },
+            ),
+          ],
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final activeContent = _weeksContent[_activeWeek];
+
     return Scaffold(
       backgroundColor: const Color(0xFF303384),
       appBar: AppBar(
         backgroundColor: const Color(0xFF303384),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white), // White back arrow
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.of(context).pop(); // Navigate back to the previous screen
+            Navigator.of(context).pop();
           },
         ),
-        title: Row(
-          children: const [
-            Text(
-              'Course Program',
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'Ubuntu', // Set the font family to Ubuntu
-                fontSize: 17,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+        title: Text(
+          _courseData!['title'],
+          style: const TextStyle(
+            color: Colors.white,
+            fontFamily: 'Ubuntu',
+            fontSize: 17,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.account_circle, color: Colors.white), // White profile icon
+            icon: const Icon(Icons.account_circle, color: Colors.white),
             onPressed: () {
               // Add your profile icon action here
             },
@@ -44,17 +148,16 @@ class CourseContent extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // Add the padding and the row for the title and star rating
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text(
-                  'UI UX Design',
-                  style: TextStyle(
+                  _courseData!['title'],
+                  style: const TextStyle(
                     color: Colors.white,
-                    fontFamily: 'Ubuntu', // Set the font family to Ubuntu
+                    fontFamily: 'Ubuntu',
                     fontSize: 24,
                     fontWeight: FontWeight.w500,
                   ),
@@ -63,14 +166,14 @@ class CourseContent extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.star,
-                      color: Colors.yellow, // Yellow star icon
+                      color: Colors.yellow,
                       size: 24.0,
                     ),
-                    SizedBox(width: 4), // Spacing between the star and the text
+                    SizedBox(width: 4),
                     Text(
-                      '4.8',
-                      style: TextStyle(
-                        color: Colors.white, // White text color
+                      '${_courseData!['rating'] ?? 'N/A'}',
+                      style: const TextStyle(
+                        color: Colors.white,
                         fontFamily: 'Ubuntu',
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
@@ -81,43 +184,41 @@ class CourseContent extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 20), // Space between the title and the container
-
-          // Add the white container
+          const SizedBox(height: 20),
           Expanded(
-            child: SingleChildScrollView( // Make the content of the container scrollable
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(0.0), // Top left corner radius
-                    topRight: Radius.circular(0.0), // Top right corner radius
-                  ),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(0.0),
+                  topRight: Radius.circular(0.0),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
-                        'Week',
-                        style: TextStyle(
-                          color: Color(0xFF303384), // Purple color for the title
-                          fontFamily: 'Ubuntu',
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      'Weeks',
+                      style: TextStyle(
+                        color: Color(0xFF303384),
+                        fontFamily: 'Ubuntu',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(4, (index) {
-                          // Generate week buttons dynamically
-                          final isActive = index == 0; // Only first week is active
-                          final color = isActive ? Color(0xFFF9B32D) : Color(0xFF303384);
-                          return Container(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: List.generate(_weeksContent.length, (index) {
+                        final isActive = index == _activeWeek;
+                        final color = isActive ? Color(0xFFF9B32D) : Color(0xFF303384);
+                        return GestureDetector(
+                          onTap: () => _setActiveWeek(index),
+                          child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
                             decoration: BoxDecoration(
                               color: color,
@@ -131,185 +232,116 @@ class CourseContent extends StatelessWidget {
                                 fontSize: 16,
                               ),
                             ),
-                          );
-                        }),
-                      ),
-                    ),
-                    const SizedBox(height: 20), // Space between the buttons and the section title
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        'UI UX Design Defined',
-                        style: TextStyle(
-                          color: Color(0xFF303384), // Purple color for the section title
-                          fontFamily: 'Ubuntu',
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    // Adding the new paragraph below the title
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: Text(
-                        'UI/UX Design is the process of creating user interfaces and experiences that are visually appealing, easy to navigate, and provide a satisfying user experience.',
-                        style: TextStyle(
-                          fontFamily: 'Ubuntu',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                    // Adding the new centered title
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16.0),
-                      child: Center(
-                        child: Text(
-                          'UX Design Principles',
-                          style: TextStyle(
-                            fontFamily: 'Ubuntu',
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF303384),
                           ),
-                        ),
-                      ),
+                        );
+                      }),
                     ),
-                    // Adding the new titles separated by lines with padding and buttons for superiority symbols
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  ),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Divider(color: Colors.grey, thickness: 1), // Divider line
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Design with the user in mind',
-                                  style: TextStyle(
-                                    fontFamily: 'Ubuntu',
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF303384),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 16.0),
-                                  child: IconButton(
-                                    icon: const Icon(Icons.chevron_right, color: Colors.black),
-                                    onPressed: () => Get.to(() => const Coursework()),
-                                  ),
-                                ),
-                              ],
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                              activeContent['title'],
+                              style: const TextStyle(
+                                color: Color(0xFF303384),
+                                fontFamily: 'Ubuntu',
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
-                          const Divider(color: Colors.grey, thickness: 1),
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Consider minor group of users',
-                                  style: TextStyle(
-                                    fontFamily: 'Ubuntu',
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF303384),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 16.0),
-                                  child: IconButton(
-                                    icon: const Icon(Icons.chevron_right, color: Colors.black),
-                                    onPressed: () {},
-                                  ),
-                                ),
-                              ],
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            child: Text(
+                              activeContent['description'],
+                              style: const TextStyle(
+                                fontFamily: 'Ubuntu',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
-                          const Divider(color: Colors.grey, thickness: 1),
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Accessibility in Design',
-                                  style: TextStyle(
-                                    fontFamily: 'Ubuntu',
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF303384),
-                                  ),
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: Center(
+                              child: Text(
+                                'Chapters',
+                                style: TextStyle(
+                                  fontFamily: 'Ubuntu',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF303384),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 16.0),
-                                  child: IconButton(
-                                    icon: const Icon(Icons.chevron_right, color: Colors.black),
-                                    onPressed: () {},
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                          const Divider(color: Colors.grey, thickness: 1),
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Usability Testing',
-                                  style: TextStyle(
-                                    fontFamily: 'Ubuntu',
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF303384),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: List.generate(activeContent['chapters'].length, (index) {
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
+                                      width: 1.0,
+                                    ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 16.0),
-                                  child: IconButton(
-                                    icon: const Icon(Icons.chevron_right, color: Colors.black),
-                                    onPressed: () {},
+                                  child: ListTile(
+                                    title: Text(
+                                      activeContent['chapters'][index],
+                                      style: const TextStyle(
+                                        fontFamily: 'Ubuntu',
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xFF303384),
+                                      ),
+                                    ),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.chevron_right, color: Colors.black),
+                                      onPressed: () => Get.to(() => Coursework()), // Update this line as needed
+                                    ),
                                   ),
-                                ),
-                              ],
+                                );
+                              }),
                             ),
                           ),
-                          const Divider(color: Colors.grey, thickness: 1),
+                          if (_activeWeek == 3)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+                              child: Center(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF013399),
+                                    padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 20.0),
+                                  ),
+                                  onPressed: () => Get.to(() => const DetailQuiz()),
+                                  child: const Text(
+                                    'Take the quiz',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: 'Ubuntu',
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 0), // Space before the button
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Center(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF013399), // Button background color
-                            padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 20.0),
-                          ),
-                          onPressed: () => Get.to(() => const DetailQuiz()),
-                          child: const Text(
-                            'Take the quiz',
-                            style: TextStyle(
-                              color: Colors.white, // Button text color
-                              fontFamily: 'Ubuntu',
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
