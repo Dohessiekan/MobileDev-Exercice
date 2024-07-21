@@ -12,6 +12,24 @@ class Courses extends StatefulWidget {
 
 class _CoursesState extends State<Courses> {
   String selectedCategory = 'History'; // Default selected category
+  String? username; // Variable to hold the username
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the username when the widget is initialized
+    _fetchUsername();
+  }
+
+  Future<void> _fetchUsername() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      setState(() {
+        username = userDoc.data()?['username'] ?? 'User'; // Default to 'User' if username is not found
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +50,7 @@ class _CoursesState extends State<Courses> {
                     crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start (left) of the section
                     children: [
                       Text(
-                        'Hello, James', // Greeting message
+                        'Hello, ${username ?? 'James'}', // Display username if available
                         style: TextStyle(
                           color: Colors.white, // Text color
                           fontSize: 17, // Text size
@@ -322,7 +340,6 @@ class CategoryItem extends StatelessWidget {
           ),
           if (isSelected)
             Container(
-              
               margin: EdgeInsets.only(top: 5), // Margin between text and underline
               width: 20, // Width of the underline
               height: 2, // Height of the underline
