@@ -44,7 +44,8 @@ class _DetailcourseState extends State<Detailcourse> {
     DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
     if (userDoc.exists) {
-      List<dynamic> enrolledCourses = userDoc['enrolledCourses'] ?? [];
+      Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+      List<dynamic> enrolledCourses = userData?['enrolledCourses'] ?? [];
       setState(() {
         isEnrolled = enrolledCourses.contains(widget.courseId);
       });
@@ -98,7 +99,9 @@ class _DetailcourseState extends State<Detailcourse> {
         throw Exception("User does not exist!");
       }
 
-      List<dynamic> enrolledCourses = userDoc['enrolledCourses'] ?? [];
+      Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+      List<dynamic> enrolledCourses = userData?['enrolledCourses'] ?? [];
+
       if (!enrolledCourses.contains(widget.courseId)) {
         enrolledCourses.add(widget.courseId);
       }

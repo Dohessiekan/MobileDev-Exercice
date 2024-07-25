@@ -83,7 +83,7 @@ class _ProfileState extends State<Profile> {
         IconButton(
           onPressed: () async {
             await FirebaseAuth.instance.signOut();
-            // Redirige vers la page de connexion ou montre un message
+            // Redirect to login page or show a message
           },
           icon: const Icon(
             Icons.logout,
@@ -267,7 +267,8 @@ class _ProfileState extends State<Profile> {
         borderRadius: BorderRadius.circular(15.0),
         border: Border.all(
           color: Colors.grey,
-          width: 2.0),
+          width: 2.0,
+        ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

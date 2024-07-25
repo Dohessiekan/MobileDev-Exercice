@@ -15,7 +15,7 @@ class CourseCard extends StatelessWidget {
     required this.hours,
     required this.image,
     required this.rating,
-    required this.onTap,
+    required this.onTap, required bool showRating,
   }) : super(key: key);
 
   @override

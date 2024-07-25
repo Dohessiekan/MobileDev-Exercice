@@ -10,7 +10,7 @@ class Coursework extends StatefulWidget {
 
 class _CourseworkState extends State<Coursework> {
   bool isFavorite = false; // State variable to manage the favorite status of the course
-
+ 
   // Replace with your own YouTube video ID
   final String videoId = '2S9oO8MQi0o'; // Example YouTube video ID for the course
 
