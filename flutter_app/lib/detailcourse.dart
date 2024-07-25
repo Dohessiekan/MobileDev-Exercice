@@ -15,6 +15,7 @@ class Detailcourse extends StatefulWidget {
 
 class _DetailcourseState extends State<Detailcourse> {
   double currentRating = 0.0;
+  double userRating = 0.0;
   bool isEnrolled = false; // Track enrollment status
 
   @override
@@ -22,13 +23,38 @@ class _DetailcourseState extends State<Detailcourse> {
     super.initState();
     _fetchCurrentRating();
     _checkEnrollmentStatus(); // Check enrollment status on initialization
+    _fetchUserRating(); // Fetch user's rating on initialization
   }
 
   void _fetchCurrentRating() async {
     DocumentSnapshot courseDoc = await FirebaseFirestore.instance.collection('courses').doc(widget.courseId).get();
     if (courseDoc.exists) {
       setState(() {
-        currentRating = courseDoc['rating'] ?? 0.0;
+        // Ensure correct type casting
+        currentRating = (courseDoc['rating'] ?? 0.0).toDouble();
+      });
+    }
+  }
+
+  void _fetchUserRating() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      // Handle user not logged in
+      return;
+    }
+
+    DocumentSnapshot userRatingDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('ratings')
+        .doc(widget.courseId)
+        .get();
+
+    if (userRatingDoc.exists) {
+      setState(() {
+        // Ensure correct type casting
+        userRating = (userRatingDoc['rating'] ?? 0.0).toDouble();
       });
     }
   }
@@ -53,32 +79,59 @@ class _DetailcourseState extends State<Detailcourse> {
   }
 
   void _submitRating(double rating) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      // Handle user not logged in
+      return;
+    }
+
+    DocumentReference userRatingRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('ratings')
+        .doc(widget.courseId);
+
     DocumentReference courseRef = FirebaseFirestore.instance.collection('courses').doc(widget.courseId);
 
     FirebaseFirestore.instance.runTransaction((transaction) async {
       DocumentSnapshot courseDoc = await transaction.get(courseRef);
+      DocumentSnapshot userRatingDoc = await transaction.get(userRatingRef);
 
       if (!courseDoc.exists) {
         throw Exception("Course does not exist!");
       }
 
-      int numberOfRatings = courseDoc['numberOfRatings'] ?? 0;
-      double totalRating = courseDoc['totalRating'] ?? 0.0;
+      double newRating = rating;
+      int numberOfRatings = (courseDoc['numberOfRatings'] ?? 0).toInt();
+      double totalRating = (courseDoc['totalRating'] ?? 0.0).toDouble();
 
-      numberOfRatings++;
-      totalRating += rating;
+      if (userRatingDoc.exists) {
+        // Update existing rating
+        double previousRating = (userRatingDoc['rating'] ?? 0.0).toDouble();
+        totalRating = totalRating - previousRating + newRating;
+      } else {
+        // Add new rating
+        numberOfRatings++;
+        totalRating += newRating;
+      }
 
-      double newRating = totalRating / numberOfRatings;
+      double updatedRating = totalRating / numberOfRatings;
 
+      transaction.set(userRatingRef, {'rating': newRating}, SetOptions(merge: true));
       transaction.update(courseRef, {
         'numberOfRatings': numberOfRatings,
         'totalRating': totalRating,
-        'rating': newRating,
+        'rating': updatedRating,
       });
 
       setState(() {
-        currentRating = newRating;
+        currentRating = updatedRating;
+        userRating = newRating; // Update user's rating
       });
+    }).catchError((error) {
+      // Handle errors
+      print('Error submitting rating: $error');
     });
   }
 
@@ -372,7 +425,7 @@ class _DetailcourseState extends State<Detailcourse> {
           children: List.generate(5, (index) {
             return IconButton(
               icon: Icon(
-                index < currentRating ? Icons.star : Icons.star_border,
+                index < userRating ? Icons.star : Icons.star_border,
                 color: Colors.yellow,
               ),
               onPressed: () {
