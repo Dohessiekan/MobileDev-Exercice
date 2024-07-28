@@ -45,7 +45,7 @@ class _ProfileState extends State<Profile> {
     User? user = _auth.currentUser;
     if (user != null) {
       DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
-      if (userDoc.exists) {
+      if (userDoc.exists && userDoc.data() != null && userDoc['profileImageURL'] != null) {
         setState(() {
           _profileImageURL = userDoc['profileImageURL'];
         });
