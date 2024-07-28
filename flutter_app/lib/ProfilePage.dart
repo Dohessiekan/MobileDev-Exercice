@@ -19,22 +19,26 @@ class _ProfileState extends State<Profile> {
   File? _profileImage;
   String? _username;
   String? _profileImageURL;
+  int _coursesTaken = 0; // Field to store the number of courses
 
   @override
   void initState() {
     super.initState();
     _fetchUsername();
     _fetchProfileImageURL();
+    _fetchCoursesTaken(); // Fetch the number of courses taken
   }
 
   // Fetch username from Firestore
   Future<void> _fetchUsername() async {
     User? user = _auth.currentUser;
     if (user != null) {
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
         setState(() {
-          _username = userDoc['username']; // Assuming 'username' is the field in Firestore
+          _username = userDoc[
+              'username']; // Assuming 'username' is the field in Firestore
         });
       }
     }
@@ -44,10 +48,26 @@ class _ProfileState extends State<Profile> {
   Future<void> _fetchProfileImageURL() async {
     User? user = _auth.currentUser;
     if (user != null) {
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
         setState(() {
           _profileImageURL = userDoc['profileImageURL'];
+        });
+      }
+    }
+  }
+
+  // Fetch the number of courses taken from Firestore
+  Future<void> _fetchCoursesTaken() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        List<dynamic> enrolledCourses = userDoc['enrolledCourses'];
+        setState(() {
+          _coursesTaken = enrolledCourses.length;
         });
       }
     }
@@ -92,7 +112,8 @@ class _ProfileState extends State<Profile> {
         ),
         IconButton(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => SettingsPage()));
           },
           icon: const Icon(
             Icons.settings,
@@ -117,8 +138,7 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(
-                top: 70.0, left: 10.0, right: 10.0),
+            padding: const EdgeInsets.only(top: 70.0, left: 10.0, right: 10.0),
             child: Column(
               children: [
                 _buildProfileName(),
@@ -140,7 +160,9 @@ class _ProfileState extends State<Profile> {
                 radius: 50,
                 backgroundImage: _profileImage != null
                     ? FileImage(_profileImage!) as ImageProvider<Object>?
-                    : (_profileImageURL != null ? NetworkImage(_profileImageURL!) : null),
+                    : (_profileImageURL != null
+                        ? NetworkImage(_profileImageURL!)
+                        : null),
                 child: _profileImageURL == null && _profileImage == null
                     ? Icon(Icons.person, size: 50, color: Colors.grey)
                     : null,
@@ -166,7 +188,8 @@ class _ProfileState extends State<Profile> {
   // Display profile name
   Widget _buildProfileName() {
     return Text(
-      _username ?? 'Loading...', // Display username or "Loading..." while fetching
+      _username ??
+          'Loading...', // Display username or "Loading..." while fetching
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -206,7 +229,8 @@ class _ProfileState extends State<Profile> {
           children: [
             _buildRedContainer('25', 'Total quizzes played', true),
             const SizedBox(height: 20),
-            _buildRedContainer('8', 'Quizzes created', true),
+            _buildRedContainer('$_coursesTaken', 'Courses taken',
+                true), // Display the number of courses taken
           ],
         ),
       ],
@@ -257,9 +281,10 @@ class _ProfileState extends State<Profile> {
   }
 
   // Build a red container for stats
-  Widget _buildRedContainer(String content, String description, bool isSpecial) {
+  Widget _buildRedContainer(
+      String content, String description, bool isSpecial) {
     return Container(
-      width: 160,
+      width: 150,
       height: 85,
       margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
       decoration: BoxDecoration(
@@ -325,11 +350,13 @@ class _ProfileState extends State<Profile> {
         String filePath = 'profile_images/${user.uid}.png';
 
         // Start the upload
-        UploadTask uploadTask = FirebaseStorage.instance.ref(filePath).putFile(_profileImage!);
+        UploadTask uploadTask =
+            FirebaseStorage.instance.ref(filePath).putFile(_profileImage!);
 
         // Show a progress indicator while uploading
         uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-          double progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          double progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           print('Upload progress: $progress%');
         });
 
@@ -337,7 +364,8 @@ class _ProfileState extends State<Profile> {
         await uploadTask;
 
         // Get the download URL
-        String downloadURL = await FirebaseStorage.instance.ref(filePath).getDownloadURL();
+        String downloadURL =
+            await FirebaseStorage.instance.ref(filePath).getDownloadURL();
 
         // Update Firestore with the new profile image URL
         await _firestore.collection('users').doc(user.uid).update({
