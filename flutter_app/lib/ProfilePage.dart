@@ -14,23 +14,25 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  File? _profileImage;
-  String? _username;
-  String? _profileImageURL;
-  int _coursesTaken = 0;
-  int _quizzesTaken = 0; // Field to store the number of quizzes taken
-  int _quizzesThisMonth =
-      0; // Field to store the number of quizzes taken this month
+  final FirebaseAuth _auth =
+      FirebaseAuth.instance; // Firebase Authentication instance
+  final FirebaseFirestore _firestore = FirebaseFirestore
+      .instance; // Firestore instance for database interactions
+  File? _profileImage; // Local file for profile image
+  String? _username; // Username of the user
+  String?
+      _profileImageURL; // URL of the profile image stored in Firebase Storage
+  int _coursesTaken = 0; // Number of courses taken by the user
+  int _quizzesTaken = 0; // Number of quizzes taken by the user
+  int _quizzesThisMonth = 0; // Number of quizzes taken by the user this month
 
   @override
   void initState() {
     super.initState();
-    _fetchUsername();
-    _fetchProfileImageURL();
-    _fetchCoursesTaken();
-    _fetchQuizzesTaken(); // Fetch the number of quizzes taken
+    _fetchUsername(); // Fetch username on init
+    _fetchProfileImageURL(); // Fetch profile image URL on init
+    _fetchCoursesTaken(); // Fetch number of courses taken on init
+    _fetchQuizzesTaken(); // Fetch number of quizzes taken on init
   }
 
   // Fetch username from Firestore
@@ -133,7 +135,7 @@ class _ProfileState extends State<Profile> {
       children: [
         IconButton(
           onPressed: () async {
-            await FirebaseAuth.instance.signOut();
+            await FirebaseAuth.instance.signOut(); // Log out the user
             // Redirect to login page or show a message
           },
           icon: const Icon(
@@ -143,8 +145,11 @@ class _ProfileState extends State<Profile> {
         ),
         IconButton(
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SettingsPage()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        SettingsPage())); // Navigate to settings page
           },
           icon: const Icon(
             Icons.settings,
@@ -206,7 +211,7 @@ class _ProfileState extends State<Profile> {
                     Icons.camera_alt,
                     color: Color.fromARGB(255, 187, 183, 183),
                   ),
-                  onPressed: _pickProfileImage,
+                  onPressed: _pickProfileImage, // Pick a profile image
                 ),
               ),
             ],
@@ -251,16 +256,18 @@ class _ProfileState extends State<Profile> {
       children: [
         Column(
           children: [
-            _buildRedContainer('526', 'Total XP', false),
+            _buildRedContainer('526', 'Total XP', false), // Example stat
             const SizedBox(height: 20),
-            _buildRedContainer('60%', 'Total XP', false),
+            _buildRedContainer('60%', 'Total XP', false), // Example stat
           ],
         ),
         Column(
           children: [
-            _buildRedContainer('$_quizzesTaken', 'Total quizzes played', true),
+            _buildRedContainer('$_quizzesTaken', 'Total quizzes played',
+                true), // Display total quizzes taken
             const SizedBox(height: 20),
-            _buildRedContainer('$_coursesTaken', 'Courses taken', true),
+            _buildRedContainer('$_coursesTaken', 'Courses taken',
+                true), // Display total courses taken
           ],
         ),
       ],
@@ -294,7 +301,8 @@ class _ProfileState extends State<Profile> {
                     style: TextStyle(color: Colors.black),
                   ),
                   TextSpan(
-                    text: '$_quizzesThisMonth quizzes',
+                    text:
+                        '$_quizzesThisMonth quizzes', // Display quizzes taken this month
                     style: TextStyle(color: Colors.white),
                   ),
                   TextSpan(
@@ -366,7 +374,7 @@ class _ProfileState extends State<Profile> {
       setState(() {
         _profileImage = File(image.path);
       });
-      _uploadProfileImage();
+      _uploadProfileImage(); // Upload the picked image
     }
   }
 
