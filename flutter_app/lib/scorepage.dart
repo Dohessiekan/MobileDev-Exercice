@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ScorePage extends StatefulWidget {
   final int score;
@@ -16,6 +17,14 @@ class _ScorePageState extends State<ScorePage> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  Future<Map<String, dynamic>> _fetchUserProfile(String userId) async {
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (userDoc.exists && userDoc.data() != null) {
+      return userDoc.data() as Map<String, dynamic>;
+    }
+    return {};
   }
 
   @override
@@ -181,8 +190,8 @@ class _ScorePageState extends State<ScorePage> {
                       itemCount: scores.length,
                       itemBuilder: (context, index) {
                         final data = scores[index].data() as Map<String, dynamic>;
-                        final username = data['username'] ?? 'Anonymous';
-                        final points = data['score'];
+                        final userId = data['userId'] ?? '';
+                        final points = data['score'] != null ? data['score'].toString() : '0';
                         Widget? crownIcon;
 
                         if (index == 0) {
@@ -195,55 +204,69 @@ class _ScorePageState extends State<ScorePage> {
                           crownIcon = const SizedBox.shrink();
                         }
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: Container(
-                            padding: const EdgeInsets.all(15.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 5,
-                                  offset: Offset(0, 2),
+                        return FutureBuilder<Map<String, dynamic>>(
+                          future: _fetchUserProfile(userId),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                            final userProfile = snapshot.data ?? {};
+                            final username = userProfile['username'] ?? 'Unknown';
+                            final profileImageURL = userProfile['profileImageURL'] ?? '';
+
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10.0),
+                              child: Container(
+                                padding: const EdgeInsets.all(15.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                const CircleAvatar(
-                                  radius: 30,
-                                  backgroundImage: AssetImage('assets/edquest.png'),
-                                ),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        username,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontFamily: 'FiraSansMedium',
-                                        ),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 30,
+                                      backgroundImage: profileImageURL.isNotEmpty
+                                          ? NetworkImage(profileImageURL)
+                                          : AssetImage('assets/edquest.png') as ImageProvider,
+                                    ),
+                                    const SizedBox(width: 20),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            username,
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontFamily: 'FiraSansMedium',
+                                            ),
+                                          ),
+                                          Text(
+                                            '$points pts',
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: 'FiraSansMedium',
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        '$points pts',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: 'FiraSansMedium',
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    crownIcon ?? const SizedBox.shrink(),
+                                  ],
                                 ),
-                                const SizedBox(width: 10),
-                                crownIcon ?? const SizedBox.shrink(),
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          },
                         );
                       },
                     );
