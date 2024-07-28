@@ -19,14 +19,18 @@ class _ProfileState extends State<Profile> {
   File? _profileImage;
   String? _username;
   String? _profileImageURL;
-  int _coursesTaken = 0; // Field to store the number of courses
+  int _coursesTaken = 0;
+  int _quizzesTaken = 0; // Field to store the number of quizzes taken
+  int _quizzesThisMonth =
+      0; // Field to store the number of quizzes taken this month
 
   @override
   void initState() {
     super.initState();
     _fetchUsername();
     _fetchProfileImageURL();
-    _fetchCoursesTaken(); // Fetch the number of courses taken
+    _fetchCoursesTaken();
+    _fetchQuizzesTaken(); // Fetch the number of quizzes taken
   }
 
   // Fetch username from Firestore
@@ -70,6 +74,33 @@ class _ProfileState extends State<Profile> {
           _coursesTaken = enrolledCourses.length;
         });
       }
+    }
+  }
+
+  // Fetch the number of quizzes taken from Firestore
+  Future<void> _fetchQuizzesTaken() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DateTime now = DateTime.now();
+      DateTime startOfMonth = DateTime(now.year, now.month, 1);
+
+      QuerySnapshot quizSnapshot = await _firestore
+          .collection('scores')
+          .where('userId', isEqualTo: user.uid)
+          .get();
+
+      int quizzesThisMonth = 0;
+      for (var doc in quizSnapshot.docs) {
+        DateTime quizDate = (doc['timestamp'] as Timestamp).toDate();
+        if (quizDate.isAfter(startOfMonth)) {
+          quizzesThisMonth++;
+        }
+      }
+
+      setState(() {
+        _quizzesTaken = quizSnapshot.size;
+        _quizzesThisMonth = quizzesThisMonth;
+      });
     }
   }
 
@@ -227,10 +258,9 @@ class _ProfileState extends State<Profile> {
         ),
         Column(
           children: [
-            _buildRedContainer('25', 'Total quizzes played', true),
+            _buildRedContainer('$_quizzesTaken', 'Total quizzes played', true),
             const SizedBox(height: 20),
-            _buildRedContainer('$_coursesTaken', 'Courses taken',
-                true), // Display the number of courses taken
+            _buildRedContainer('$_coursesTaken', 'Courses taken', true),
           ],
         ),
       ],
@@ -253,7 +283,7 @@ class _ProfileState extends State<Profile> {
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: RichText(
               textAlign: TextAlign.center,
-              text: const TextSpan(
+              text: TextSpan(
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -264,7 +294,7 @@ class _ProfileState extends State<Profile> {
                     style: TextStyle(color: Colors.black),
                   ),
                   TextSpan(
-                    text: '24 quizzes',
+                    text: '$_quizzesThisMonth quizzes',
                     style: TextStyle(color: Colors.white),
                   ),
                   TextSpan(
