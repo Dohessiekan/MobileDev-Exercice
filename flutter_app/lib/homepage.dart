@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -150,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 20),
                   Container(
                     width: double.infinity,
-                    height: 120,
+                    height: 100,
                     decoration: BoxDecoration(
                       color: Color.fromARGB(164, 30, 15, 99),
                       borderRadius: BorderRadius.circular(20),
@@ -166,7 +166,7 @@ class _HomePageState extends State<HomePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Text(
-                                  'RECENT COURSES',
+                                  'COURSES TO BE ADDED',
                                   style: TextStyle(
                                     fontFamily: 'Fira Sans',
                                     color: Color.fromARGB(158, 255, 255, 255),
@@ -184,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     const SizedBox(width: 5),
                                     Text(
-                                      'Data Science Basics',
+                                      'Classic Music Basics',
                                       style: TextStyle(
                                         fontFamily: 'Fira Sans',
                                         color: Colors.white,
@@ -198,39 +198,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           SizedBox(width: 60),
-                          Expanded(
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: PieChart(
-                                PieChartData(
-                                  sections: [
-                                    PieChartSectionData(
-                                      color: Color(0xFFA5AED0),
-                                      value: 30,
-                                      title: '30%',
-                                      radius: 30,
-                                      titleStyle: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    PieChartSectionData(
-                                      color: Color(0xFF6A6DB5),
-                                      value: 70,
-                                      title: '70%',
-                                      radius: 30,
-                                      titleStyle: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -238,18 +205,19 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 10),
                   Container(
                     width: double.infinity,
-                    height: 260,
+                    height: 215,
                     decoration: BoxDecoration(
                       color: Color.fromARGB(103, 55, 141, 212),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0),
+                      padding: const EdgeInsets.only(
+                          top: 20.0, left: 40.0, right: 40.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Text(
-                            'FEATURED',
+                            'QUOTE OF THE DAY',
                             style: TextStyle(
                               fontFamily: 'Fira Sans',
                               color: Colors.white,
@@ -298,33 +266,24 @@ class _HomePageState extends State<HomePage> {
                                 color: Colors.black,
                               ),
                             ),
-                            TextButton(
-                              onPressed: () => Get.to(() => Courses()),
-                              child: Text(
-                                'See All',
-                                style: TextStyle(
-                                  fontFamily: 'Fira Sans',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF6A6DB5),
-                                ),
-                              ),
-                            ),
+                            
                           ],
                         ),
                         FutureBuilder<List<DocumentSnapshot>>(
                           future: _fetchPopularCourses(),
-                          builder: (context, snapshot) {
+                builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return Center(child: CircularProgressIndicator());
                             }
 
                             if (snapshot.hasError) {
-                              return Center(child: Text('Error fetching courses'));
+                              return Center(
+                                  child: Text('Error fetching courses'));
                             }
 
                             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                              return Center(child: Text('No popular courses found'));
+                              return Center(
+                                  child: Text('No popular courses found'));
                             }
 
                             List<DocumentSnapshot> courses = snapshot.data!;
@@ -332,9 +291,11 @@ class _HomePageState extends State<HomePage> {
                             return Column(
                               children: [
                                 ...courses.map((courseDoc) {
-                                  var courseData = courseDoc.data() as Map<String, dynamic>;
+                                  var courseData =
+                                      courseDoc.data() as Map<String, dynamic>;
                                   return GestureDetector(
-                                    onTap: () => Get.to(() => Detailcourse(courseId: courseDoc.id)),
+                                    onTap: () => Get.to(() =>
+                                        Detailcourse(courseId: courseDoc.id)),
                                     child: Container(
                                       padding: EdgeInsets.all(8),
                                       margin: EdgeInsets.symmetric(vertical: 4),
@@ -343,7 +304,8 @@ class _HomePageState extends State<HomePage> {
                                         borderRadius: BorderRadius.circular(8),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Color.fromARGB(150, 5, 5, 5).withOpacity(0.3),
+                                            color: Color.fromARGB(150, 5, 5, 5)
+                                                .withOpacity(0.3),
                                             spreadRadius: 1,
                                             blurRadius: 4,
                                             offset: Offset(0, 2),
@@ -353,7 +315,8 @@ class _HomePageState extends State<HomePage> {
                                       child: Row(
                                         children: [
                                           ClipRRect(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             child: Image.network(
                                               courseData['image'] ?? '',
                                               height: 60,
@@ -364,10 +327,12 @@ class _HomePageState extends State<HomePage> {
                                           SizedBox(width: 8),
                                           Expanded(
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  courseData['title'] ?? 'No Title',
+                                                  courseData['title'] ??
+                                                      'No Title',
                                                   style: TextStyle(
                                                     fontFamily: 'Fira Sans',
                                                     fontSize: 16,
@@ -376,7 +341,8 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                                 SizedBox(height: 4),
                                                 Text(
-                                                  courseData['subtitle'] ?? 'No Subtitle',
+                                                  courseData['subtitle'] ??
+                                                      'No Subtitle',
                                                   style: TextStyle(
                                                     fontFamily: 'Fira Sans',
                                                     fontSize: 12,
@@ -396,7 +362,8 @@ class _HomePageState extends State<HomePage> {
                                                       style: TextStyle(
                                                         fontFamily: 'Fira Sans',
                                                         fontSize: 12,
-                                                        fontWeight: FontWeight.w500,
+                                                        fontWeight:
+                                                            FontWeight.w500,
                                                         color: Colors.blue,
                                                       ),
                                                     ),
@@ -425,7 +392,8 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   );
                                 }).toList(),
-                                SizedBox(height: 10), // Add a small space at the end
+                                SizedBox(
+                                    height: 10), // Add a small space at the end
                               ],
                             );
                           },

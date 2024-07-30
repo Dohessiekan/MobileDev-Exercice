@@ -17,3 +17,23 @@ const logger = require("firebase-functions/logger");
 //   logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+admin.initializeApp();
+
+exports.resetDailyXP = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
+  const now = new Date();
+  const startOfDay = new Date(now.setUTCHours(0, 0, 0, 0)).toISOString();
+  const endOfDay = new Date(now.setUTCHours(23, 59, 59, 999)).toISOString();
+
+  const usersRef = admin.firestore().collection('users');
+  const snapshot = await usersRef.where('lastXPUpdate', '>=', startOfDay).where('lastXPUpdate', '<=', endOfDay).get();
+
+  const batch = admin.firestore().batch();
+  snapshot.forEach(doc => {
+    const userRef = doc.ref;
+    batch.update(userRef, { dailyXP: 0 });
+  });
+
+  await batch.commit();
+});

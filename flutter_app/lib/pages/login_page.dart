@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth package
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth package for authentication
 
 import '../register.dart';
 import '../email_verification.dart';
 import '../navbar.dart';
 
+// The main LoginPage widget, which is a StatefulWidget
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -14,29 +15,37 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
+// The state for the LoginPage
 class _LoginPageState extends State<LoginPage> {
-  int activeIndex = 0;
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  int activeIndex =
+      0; // Index to track the active page for animations or indicators
+  final TextEditingController _emailController =
+      TextEditingController(); // Controller for the email input
+  final TextEditingController _passwordController =
+      TextEditingController(); // Controller for the password input
 
   @override
   void initState() {
     super.initState();
+    // Periodically update the activeIndex to create a looping animation effect
     Timer.periodic(Duration(seconds: 5), (timer) {
       setState(() {
         activeIndex++;
-        if (activeIndex == 4) activeIndex = 0; // Reset index to 0 after 4
+        if (activeIndex == 4)
+          activeIndex = 0; // Reset index to 0 after reaching 4
       });
     });
   }
 
+  // Function to sign in with email and password using Firebase Authentication
   Future<void> _signInWithEmailAndPassword() async {
     try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
-      Get.to(() => const BottomNavigationMenu()); // Navigate to the bottom navigation menu on successful login
+      // Navigate to the bottom navigation menu on successful login
+      Get.to(() => const BottomNavigationMenu());
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         _showErrorSnackbar('No user found for that email.');
@@ -48,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // Function to show error messages as snackbars
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
@@ -64,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 50),
-              // Image or logo at the top
+              // Image or logo at the top of the login page
               Container(
                 child: Image.asset(
                   'assets/edquest.png',
@@ -72,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(height: 40),
-              // Email text field
+              // Email text field for user input
               TextField(
                 controller: _emailController,
                 cursorColor: Colors.black,
@@ -90,7 +100,8 @@ class _LoginPageState extends State<LoginPage> {
                     fontSize: 14.0,
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey.shade200, width: 2),
+                    borderSide:
+                        BorderSide(color: Colors.grey.shade200, width: 2),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -104,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(height: 20),
-              // Password text field
+              // Password text field for user input
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -123,7 +134,8 @@ class _LoginPageState extends State<LoginPage> {
                     fontWeight: FontWeight.w400,
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey.shade200, width: 2),
+                    borderSide:
+                        BorderSide(color: Colors.grey.shade200, width: 2),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -137,16 +149,18 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(height: 10),
-              // Forgot password button
+              // "Forgot Password?" button
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>  ForgetPasswordPage()),  // Navigate to the RegisterPage when the button is pressed
-                  );
-                },
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ForgetPasswordPage()), // Navigate to the ForgetPasswordPage when the button is pressed
+                    );
+                  },
                   child: Text(
                     'Forgot Password?',
                     style: TextStyle(
@@ -173,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(height: 30),
-              // Sign up option
+              // Sign up option with "Don't have an account?" text
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -187,11 +201,13 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>  RegisterPage()),  // Navigate to the RegisterPage when the button is pressed
-                  );
-                },
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                RegisterPage()), // Navigate to the RegisterPage when the button is pressed
+                      );
+                    },
                     child: Text(
                       'Sign up',
                       style: TextStyle(
