@@ -150,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 20),
                   Container(
                     width: double.infinity,
-                    height: 120,
+                    height: 100,
                     decoration: BoxDecoration(
                       color: Color.fromARGB(164, 30, 15, 99),
                       borderRadius: BorderRadius.circular(20),
@@ -166,7 +166,7 @@ class _HomePageState extends State<HomePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Text(
-                                  'RECENT COURSES',
+                                  'COURSES TO BE ADDED',
                                   style: TextStyle(
                                     fontFamily: 'Fira Sans',
                                     color: Color.fromARGB(158, 255, 255, 255),
@@ -184,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     const SizedBox(width: 5),
                                     Text(
-                                      'Data Science Basics',
+                                      'Classic Music Basics',
                                       style: TextStyle(
                                         fontFamily: 'Fira Sans',
                                         color: Colors.white,
@@ -198,39 +198,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           SizedBox(width: 60),
-                          Expanded(
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: PieChart(
-                                PieChartData(
-                                  sections: [
-                                    PieChartSectionData(
-                                      color: Color(0xFFA5AED0),
-                                      value: 30,
-                                      title: '30%',
-                                      radius: 30,
-                                      titleStyle: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    PieChartSectionData(
-                                      color: Color(0xFF6A6DB5),
-                                      value: 70,
-                                      title: '70%',
-                                      radius: 30,
-                                      titleStyle: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -238,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 10),
                   Container(
                     width: double.infinity,
-                    height: 260,
+                    height: 215,
                     decoration: BoxDecoration(
                       color: Color.fromARGB(103, 55, 141, 212),
                       borderRadius: BorderRadius.circular(20),
@@ -250,7 +217,7 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Text(
-                            'FEATURED',
+                            'QUOTE OF THE DAY',
                             style: TextStyle(
                               fontFamily: 'Fira Sans',
                               color: Colors.white,

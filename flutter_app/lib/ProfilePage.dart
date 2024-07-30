@@ -14,24 +14,22 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  final FirebaseAuth _auth =
-      FirebaseAuth.instance; // Firebase Authentication instance
-  final FirebaseFirestore _firestore = FirebaseFirestore
-      .instance; // Firestore instance for database interactions
+  final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Authentication instance
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Firestore instance for database interactions
   File? _profileImage; // Local file for profile image
   String? _username; // Username of the user
-  String?
-      _profileImageURL; // URL of the profile image stored in Firebase Storage
+  String? _profileImageURL; // URL of the profile image stored in Firebase Storage
   int _coursesTaken = 0; // Number of courses taken by the user
   int _quizzesTaken = 0; // Number of quizzes taken by the user
   int _quizzesThisMonth = 0; // Number of quizzes taken by the user this month
+  int _xpPoints = 0; // User's XP points
 
   @override
   void initState() {
     super.initState();
     _fetchUsername(); // Fetch username on init
     _fetchProfileImageURL(); // Fetch profile image URL on init
-    _fetchCoursesTaken(); // Fetch number of courses taken on init
+    _fetchUserData(); // Fetch number of courses taken and XP points on init
     _fetchQuizzesTaken(); // Fetch number of quizzes taken on init
   }
 
@@ -39,12 +37,10 @@ class _ProfileState extends State<Profile> {
   Future<void> _fetchUsername() async {
     User? user = _auth.currentUser;
     if (user != null) {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
         setState(() {
-          _username = userDoc[
-              'username']; // Assuming 'username' is the field in Firestore
+          _username = userDoc['username']; // Assuming 'username' is the field in Firestore
         });
       }
     }
@@ -54,8 +50,7 @@ class _ProfileState extends State<Profile> {
   Future<void> _fetchProfileImageURL() async {
     User? user = _auth.currentUser;
     if (user != null) {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
         setState(() {
           _profileImageURL = userDoc['profileImageURL'];
@@ -64,16 +59,17 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  // Fetch the number of courses taken from Firestore
-  Future<void> _fetchCoursesTaken() async {
+  // Fetch the number of courses taken and XP points from Firestore
+  Future<void> _fetchUserData() async {
     User? user = _auth.currentUser;
     if (user != null) {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
         List<dynamic> enrolledCourses = userDoc['enrolledCourses'];
+        int xpPoints = userDoc['xpPoints'];
         setState(() {
           _coursesTaken = enrolledCourses.length;
+          _xpPoints = xpPoints;
         });
       }
     }
@@ -86,10 +82,7 @@ class _ProfileState extends State<Profile> {
       DateTime now = DateTime.now();
       DateTime startOfMonth = DateTime(now.year, now.month, 1);
 
-      QuerySnapshot quizSnapshot = await _firestore
-          .collection('scores')
-          .where('userId', isEqualTo: user.uid)
-          .get();
+      QuerySnapshot quizSnapshot = await _firestore.collection('scores').where('userId', isEqualTo: user.uid).get();
 
       int quizzesThisMonth = 0;
       for (var doc in quizSnapshot.docs) {
@@ -256,18 +249,16 @@ class _ProfileState extends State<Profile> {
       children: [
         Column(
           children: [
-            _buildRedContainer('526', 'Total XP', false), // Example stat
+            _buildRedContainer('$_xpPoints', 'Total XP', true), // Display total XP points
             const SizedBox(height: 20),
-            _buildRedContainer('60%', 'Total XP', false), // Example stat
+            _buildRedContainer('60%', 'Progress', false), // Example stat
           ],
         ),
         Column(
           children: [
-            _buildRedContainer('$_quizzesTaken', 'Total quizzes played',
-                true), // Display total quizzes taken
+            _buildRedContainer('$_quizzesTaken', 'Total quizzes played', true), // Display total quizzes taken
             const SizedBox(height: 20),
-            _buildRedContainer('$_coursesTaken', 'Courses taken',
-                true), // Display total courses taken
+            _buildRedContainer('$_coursesTaken', 'Courses taken', true), // Display total courses taken
           ],
         ),
       ],
@@ -301,8 +292,7 @@ class _ProfileState extends State<Profile> {
                     style: TextStyle(color: Colors.black),
                   ),
                   TextSpan(
-                    text:
-                        '$_quizzesThisMonth quizzes', // Display quizzes taken this month
+                    text: '$_quizzesThisMonth quizzes', // Display quizzes taken this month
                     style: TextStyle(color: Colors.white),
                   ),
                   TextSpan(
@@ -319,8 +309,7 @@ class _ProfileState extends State<Profile> {
   }
 
   // Build a red container for stats
-  Widget _buildRedContainer(
-      String content, String description, bool isSpecial) {
+  Widget _buildRedContainer(String content, String description, bool isSpecial) {
     return Container(
       width: 150,
       height: 85,
@@ -388,13 +377,11 @@ class _ProfileState extends State<Profile> {
         String filePath = 'profile_images/${user.uid}.png';
 
         // Start the upload
-        UploadTask uploadTask =
-            FirebaseStorage.instance.ref(filePath).putFile(_profileImage!);
+        UploadTask uploadTask = FirebaseStorage.instance.ref(filePath).putFile(_profileImage!);
 
         // Show a progress indicator while uploading
         uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-          double progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          double progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           print('Upload progress: $progress%');
         });
 
@@ -402,8 +389,7 @@ class _ProfileState extends State<Profile> {
         await uploadTask;
 
         // Get the download URL
-        String downloadURL =
-            await FirebaseStorage.instance.ref(filePath).getDownloadURL();
+        String downloadURL = await FirebaseStorage.instance.ref(filePath).getDownloadURL();
 
         // Update Firestore with the new profile image URL
         await _firestore.collection('users').doc(user.uid).update({

@@ -27,6 +27,34 @@ class _ScorePageState extends State<ScorePage> {
     return {};
   }
 
+  Future<void> _updateXPPoints(int score) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return; // Handle case where user is not logged in
+
+    final userDocRef = FirebaseFirestore.instance.collection('users').doc(userId);
+    final userDoc = await userDocRef.get();
+    int currentXP = 0;
+
+    if (userDoc.exists && userDoc.data() != null) {
+      final data = userDoc.data() as Map<String, dynamic>;
+      currentXP = data['xpPoints'] ?? 0;
+    }
+
+    // Define the XP calculation logic
+    int xpEarned = score * 10; // Example: 10 XP points per score point
+
+    // Update the user's XP points
+    await userDocRef.set({
+      'xpPoints': currentXP + xpEarned
+    }, SetOptions(merge: true)); // Use merge to keep other fields intact
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _updateXPPoints(widget.score); // Update XP points when the page is initialized
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
