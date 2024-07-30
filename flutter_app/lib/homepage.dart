@@ -298,23 +298,12 @@ class _HomePageState extends State<HomePage> {
                                 color: Colors.black,
                               ),
                             ),
-                            TextButton(
-                              onPressed: () => Get.to(() => Courses()),
-                              child: Text(
-                                'See All',
-                                style: TextStyle(
-                                  fontFamily: 'Fira Sans',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF6A6DB5),
-                                ),
-                              ),
-                            ),
+                            
                           ],
                         ),
                         FutureBuilder<List<DocumentSnapshot>>(
                           future: _fetchPopularCourses(),
-                          builder: (context, snapshot) {
+                builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return Center(child: CircularProgressIndicator());
                             }
