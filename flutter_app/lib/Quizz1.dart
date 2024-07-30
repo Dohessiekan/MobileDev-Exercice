@@ -17,7 +17,7 @@ class _QuizPageState extends State<QuizPage> {
   int score = 0;
   String? _selectedOption;
   Timer? _timer;
-  int _remainingTime = 1200;  // 30 minutes in seconds
+  int _remainingTime = 1200; // 20 minutes in seconds
 
   final List<Map<String, dynamic>> questions = [
     {
@@ -448,12 +448,22 @@ class _QuizPageState extends State<QuizPage> {
     } else {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        await FirebaseFirestore.instance.collection('scores').add({
-          'userId': user.uid,
-          'username': user.displayName ?? 'Anonymous',
-          'score': score,
-          'timestamp': FieldValue.serverTimestamp(),
-        });
+        final scoresRef = FirebaseFirestore.instance.collection('scores').doc(user.uid);
+        final userDoc = await scoresRef.get();
+
+        if (userDoc.exists) {
+          await scoresRef.update({
+            'score': FieldValue.increment(score),
+            'timestamp': FieldValue.serverTimestamp(),
+          });
+        } else {
+          await scoresRef.set({
+            'userId': user.uid,
+            'username': user.displayName ?? 'Anonymous',
+            'score': score,
+            'timestamp': FieldValue.serverTimestamp(),
+          });
+        }
       }
       Get.to(() => ScorePage(score: score));
     }
